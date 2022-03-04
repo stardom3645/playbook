@@ -1,0 +1,10 @@
+---
+- name: Status httpd service
+  #hosts: wpserver_back
+  gather_facts: no
+  vars:
+    - ansible_user: root
+    - ansible_ssh_pass: Ablecloud1!
+  tasks:
+    - name: status
+      command: systemctl status httpd
