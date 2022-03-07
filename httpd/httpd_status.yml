@@ -1,6 +1,6 @@
 ---
 - name: Status httpd service
-  # hosts: wpserver_back
+  hosts: manageVM
   gather_facts: no
   vars:
     - ansible_user: root
