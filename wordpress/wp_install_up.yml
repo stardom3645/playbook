@@ -1,6 +1,8 @@
 ---
 - name: Genie를 활용한 Mold VM 배포
-  hosts: mold_10.10.1.10
+  hosts: cloud-vm
+  vars_files: 
+    - /home/runner/.ansible_vars_files.yml
   gather_facts: no
   tasks:
 
@@ -8,15 +10,22 @@
 
     - name: 가상머신 생성
       cs_instance:
+        api_url: "{{ api_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+        zone: Zone
         name: sj-deploy-vm1
         template: CentOS8.4_changeRepo
         service_offering: 2C-4GB-RBD
         networks:
-          - hwryu-isolated
+          - sj-genie-network1
       delegate_to: localhost
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
+        api_url: "{{ api_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
         name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
@@ -25,9 +34,13 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: Create a static NAT for IP 10.10.1.108 to sj-deploy-vm1
+    - name: Create a static NAT for IP 10.10.3.112 to sj-deploy-vm1
       cs_staticnat:
-        ip_address: 10.10.1.108
+        api_url: "{{ api_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+        zone: Zone
+        ip_address: 10.10.3.112
         vm: sj-deploy-vm1
       delegate_to: localhost
 
@@ -37,17 +50,25 @@
         groups:
           - deployVmIp
 
-    - name: 10.10.1.108:80 포트 허용
+    - name: 10.10.3.112:80 포트 허용
       cs_firewall:
-        ip_address: 10.10.1.108
+        api_url: "{{ api_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+        zone: Zone
+        ip_address: 10.10.3.112
         start_port: 80
         end_port: 80
         protocol: tcp
       delegate_to: localhost
 
-    - name: 10.10.1.108:22 포트 허용
+    - name: 10.10.3.112:22 포트 허용
       cs_firewall:
-        ip_address: 10.10.1.108
+        api_url: "{{ api_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+        zone: Zone
+        ip_address: 10.10.3.112
         start_port: 22
         end_port: 22
         protocol: tcp
@@ -88,7 +109,7 @@
 
     - name: 생성한 가상머신이 부팅이 완료될 때까지 기다림
       wait_for_connection:
-        timeout: 30
+        timeout: 20
 
     - name: Install HTTP Packages
       yum: name=httpd update_cache=yes state=latest
@@ -107,7 +128,7 @@
     # ansible control에 httpd설치 필요
     - name: Set up Apache VirtualHost
       template:
-        src: "/root/httpd.conf"
+        src: "//home/runner/httpd.conf"
         dest: "/etc/httpd/conf.d/{{ http_conf }}"
         owner: root
         group: root
@@ -142,7 +163,7 @@
       systemd: name=mysqld state=started enabled=yes
 
     - name: Set MySQL root Password
-      mysql_user:
+      community.mysql.mysql_user:
         name: root
         password: "{{ mysql_root_password }}"
         login_host: localhost
@@ -150,14 +171,14 @@
         login_password: ""
         state: present
     - name: Creates database for WordPress
-      mysql_db:
+      community.mysql.mysql_db:
         name: "{{ mysql_db }}"
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
     - name: Create MySQL user for WordPress
-      mysql_user:
+      community.mysql.mysql_user:
         name: "{{ mysql_user }}"
         password: "{{ mysql_password }}"
         priv: "{{ mysql_db }}.*:ALL"
