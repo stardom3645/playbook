@@ -25,9 +25,9 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: Create a static NAT for IP 10.10.1.108 to sj-deploy-vm1
+    - name: Create a static NAT for IP 10.10.1.106 to sj-deploy-vm1
       cs_staticnat:
-        ip_address: 10.10.1.108
+        ip_address: 10.10.1.106
         vm: sj-deploy-vm1
       delegate_to: localhost
 
@@ -37,17 +37,17 @@
         groups:
           - deployVmIp
 
-    - name: 10.10.1.108:80 포트 허용
+    - name: 10.10.1.106:80 포트 허용
       cs_firewall:
-        ip_address: 10.10.1.108
+        ip_address: 10.10.1.106
         start_port: 80
         end_port: 80
         protocol: tcp
       delegate_to: localhost
 
-    - name: 10.10.1.108:22 포트 허용
+    - name: 10.10.1.106:22 포트 허용
       cs_firewall:
-        ip_address: 10.10.1.108
+        ip_address: 10.10.1.106
         start_port: 22
         end_port: 22
         protocol: tcp
