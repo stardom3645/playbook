@@ -1,6 +1,6 @@
 ---
 - name: Genie를 활용한 Mold VM 배포
-  hosts: cloud-vm
+  hosts: mold_10.10.1.10
   gather_facts: no
   tasks:
 
