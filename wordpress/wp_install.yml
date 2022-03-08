@@ -8,7 +8,7 @@
 
     - name: 가상머신 생성
       cs_instance:
-        name: sj-deploy-vm1
+        name: sj-deploy-vm2
         template: CentOS8.4_changeRepo
         service_offering: 2C-4GB-RBD
         networks:
@@ -17,7 +17,7 @@
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
-        name: sj-deploy-vm1
+        name: sj-deploy-vm2
       delegate_to: localhost
       register: vm
 
@@ -25,10 +25,10 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: Create a static NAT for IP 10.10.3.113 to sj-deploy-vm1
+    - name: Create a static NAT for IP 10.10.3.112 to sj-deploy-vm2
       cs_staticnat:
-        ip_address: 10.10.3.113
-        vm: sj-deploy-vm1
+        ip_address: 10.10.3.112
+        vm: sj-deploy-vm2
       delegate_to: localhost
 
     - name: 배포 가상머신 인메모리 inventory에 등록
@@ -37,17 +37,17 @@
         groups:
           - deployVmIp
 
-    - name: 10.10.3.113:80 포트 허용
+    - name: 10.10.3.112:80 포트 허용
       cs_firewall:
-        ip_address: 10.10.3.113
+        ip_address: 10.10.3.112
         start_port: 80
         end_port: 80
         protocol: tcp
       delegate_to: localhost
 
-    - name: 10.10.3.113:22 포트 허용
+    - name: 10.10.3.112:22 포트 허용
       cs_firewall:
-        ip_address: 10.10.3.113
+        ip_address: 10.10.3.112
         start_port: 22
         end_port: 22
         protocol: tcp
