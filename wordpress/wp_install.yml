@@ -86,9 +86,9 @@
 
   tasks:
 
-    # - name: 생성한 가상머신이 부팅이 완료될 때까지 기다림
-    #   wait_for_connection:
-    #     timeout: 900
+    - name: 생성한 가상머신이 부팅이 완료될 때까지 기다림
+      wait_for_connection:
+        timeout: 60
 
     - name: Install HTTP Packages
       yum: name=httpd update_cache=yes state=latest
