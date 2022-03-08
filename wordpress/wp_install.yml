@@ -142,7 +142,7 @@
       systemd: name=mysqld state=started enabled=yes
 
     - name: Set MySQL root Password
-      mysql_user:
+      community.mysql.mysql_user:
         name: root
         password: "{{ mysql_root_password }}"
         login_host: localhost
@@ -150,14 +150,14 @@
         login_password: ""
         state: present
     - name: Creates database for WordPress
-      mysql_db:
+      community.mysqlmysql_db:
         name: "{{ mysql_db }}"
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
     - name: Create MySQL user for WordPress
-      mysql_user:
+      community.mysql.mysql_user:
         name: "{{ mysql_user }}"
         password: "{{ mysql_password }}"
         priv: "{{ mysql_db }}.*:ALL"
