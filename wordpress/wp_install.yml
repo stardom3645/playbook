@@ -8,16 +8,16 @@
 
     - name: 가상머신 생성
       cs_instance:
-        name: sj-deploy-vm2
+        name: sj-deploy-vm1
         template: CentOS8.4_changeRepo
         service_offering: 2C-4GB-RBD
         networks:
-          - sj-genie-network1
+          - hwryu-isolated 네트워크
       delegate_to: localhost
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
-        name: sj-deploy-vm2
+        name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
 
@@ -25,10 +25,10 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: Create a static NAT for IP 10.10.3.112 to sj-deploy-vm2
+    - name: Create a static NAT for IP 10.10.1.108 to sj-deploy-vm1
       cs_staticnat:
-        ip_address: 10.10.3.112
-        vm: sj-deploy-vm2
+        ip_address: 10.10.1.108
+        vm: sj-deploy-vm1
       delegate_to: localhost
 
     - name: 배포 가상머신 인메모리 inventory에 등록
@@ -37,17 +37,17 @@
         groups:
           - deployVmIp
 
-    - name: 10.10.3.112:80 포트 허용
+    - name: 10.10.1.108:80 포트 허용
       cs_firewall:
-        ip_address: 10.10.3.112
+        ip_address: 10.10.1.108
         start_port: 80
         end_port: 80
         protocol: tcp
       delegate_to: localhost
 
-    - name: 10.10.3.112:22 포트 허용
+    - name: 10.10.1.108:22 포트 허용
       cs_firewall:
-        ip_address: 10.10.3.112
+        ip_address: 10.10.1.108
         start_port: 22
         end_port: 22
         protocol: tcp
@@ -88,7 +88,7 @@
 
     - name: 생성한 가상머신이 부팅이 완료될 때까지 기다림
       wait_for_connection:
-        timeout: 20
+        timeout: 30
 
     - name: Install HTTP Packages
       yum: name=httpd update_cache=yes state=latest
@@ -142,7 +142,7 @@
       systemd: name=mysqld state=started enabled=yes
 
     - name: Set MySQL root Password
-      community.mysql.mysql_user:
+      mysql_user:
         name: root
         password: "{{ mysql_root_password }}"
         login_host: localhost
@@ -150,14 +150,14 @@
         login_password: ""
         state: present
     - name: Creates database for WordPress
-      community.mysqlmysql_db:
+      mysql_db:
         name: "{{ mysql_db }}"
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
     - name: Create MySQL user for WordPress
-      community.mysql.mysql_user:
+      mysql_user:
         name: "{{ mysql_user }}"
         password: "{{ mysql_password }}"
         priv: "{{ mysql_db }}.*:ALL"
