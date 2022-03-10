@@ -18,7 +18,7 @@
         template: CentOS8.4_changeRepo
         service_offering: 2C-4GB-RBD
         networks:
-          - sj-genie-network1
+          - hwryu-network
       delegate_to: localhost
 
     - name: 배포한 가상머신 정보 수집
