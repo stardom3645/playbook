@@ -1,12 +1,15 @@
 ---
 - name: Genie를 활용한 Mold VM 배포
-  hosts: mold_10.10.1.10
+  hosts: localhost
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
 
     - name: 가상머신 생성
       cs_instance:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         name: sj-deploy-vm1
         template: CentOS-8-5-2111
         service_offering: 2C-4GB-RBD
@@ -16,6 +19,9 @@
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
@@ -26,11 +32,17 @@
 
     - name: Create Public IP
       cs_ip_address:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         network: sjNW
       register: ac_public_ip
 
     - name: Create a static NAT for 'ac_public_ip' to sj-deploy-vm1
       cs_staticnat:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_addrss: "{{ ac_public_ip} }}"
         vm: sj-deploy-vm1
       delegate_to: localhost
@@ -43,6 +55,9 @@
 
     - name: Allow 88 port for public ip
       cs_firewall:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_address: "{{ ac_public_ip} }}"
         start_port: 80
         end_port: 80
@@ -51,6 +66,9 @@
 
     - name: Allow 22 port for public ip
       cs_firewall:
+        api_url: "{{ MOLD_API_URL }}"
+        api_key: "{{ MOLD_API_KEY }}"
+        api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_address: "{{ ac_public_ip} }}"
         start_port: 22
         end_port: 22
@@ -168,7 +186,7 @@
       become: true
     - name: "Configure Nextcloud - httpd"
       ansible.builtin.template:
-        src: "nextcloud.conf.j2"
+        src: "/home/runner/nextcloud.conf.j2"
         dest: "/etc/httpd/conf.d/nextcloud.conf"
         owner: "root"
         group: "root"
@@ -221,7 +239,7 @@
       become: true
     - name: "Configure Nextcloud - autoconfig"
       ansible.builtin.template:
-        src: "autoconfig.php.j2"
+        src: "/home/runner/autoconfig.php.j2"
         dest: "/var/www/html/nextcloud/config/autoconfig.php"
         owner: "apache"
         group: "apache"
