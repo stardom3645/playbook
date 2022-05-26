@@ -44,7 +44,7 @@
       debug:
         msg: "{{ ac_public_ip }}"
 
-    - name: Create a static NAT for 'ac_public_ip' to sj-deploy-vm1
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to sj-deploy-vm1
       cs_staticnat:
         api_url: "{{ MOLD_API_URL }}"
         api_key: "{{ MOLD_API_KEY }}"
@@ -65,7 +65,7 @@
         api_url: "{{ MOLD_API_URL }}"
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
-        ip_address: "{{ ac_public_ip} }}"
+        ip_address: "{{ ac_public_ip.ip_address} }}"
         zone: Zone
         start_port: 80
         end_port: 80
@@ -77,7 +77,7 @@
         api_url: "{{ MOLD_API_URL }}"
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
-        ip_address: "{{ ac_public_ip} }}"
+        ip_address: "{{ ac_public_ip.ip_address} }}"
         zone: Zone
         start_port: 22
         end_port: 22
