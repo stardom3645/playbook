@@ -46,7 +46,6 @@
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_address: "{{ ac_public_ip }}"
-        zone: Zone
         vm: sj-deploy-vm1
       delegate_to: localhost
 
