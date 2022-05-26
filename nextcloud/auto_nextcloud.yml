@@ -15,7 +15,7 @@
         template: CentOS-8-5-2111
         service_offering: 2C-4GB-RBD
         networks:
-          - sjNW
+          - genie-network1
       delegate_to: localhost
 
     - name: 배포한 가상머신 정보 수집
@@ -37,7 +37,7 @@
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
         zone: Zone
-        network: sjNW
+        network: genie-network1
       register: ac_public_ip
 
     - name: Public IP 정보 수집
