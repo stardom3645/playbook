@@ -42,7 +42,7 @@
 
     - name: Public IP 정보 수집
       debug:
-        msg: "{{ ac_public_ip.publicipaddress[0].ipaddress }}"
+        msg: "{{ ac_public_ip }}"
 
     - name: Create a static NAT for 'ac_public_ip' to sj-deploy-vm1
       cs_staticnat:
