@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
-  tasks:
+
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
         api_url: "{{ MOLD_API_URL }}"
@@ -13,6 +13,10 @@
         name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
     - name: 배포 가상머신 인메모리 inventory에 등록
       add_host:
