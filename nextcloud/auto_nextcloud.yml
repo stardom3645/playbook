@@ -14,6 +14,7 @@
         name: sj-deploy-vm1
         template: CentOS-8-5-2111
         service_offering: 2C-4GB-RBD
+        ssh_key: AutomationController-hwryu
         networks:
           - genie-network1
       delegate_to: localhost
