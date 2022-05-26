@@ -10,6 +10,7 @@
         api_url: "{{ MOLD_API_URL }}"
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
+        zone: Zone
         name: sj-deploy-vm1
         template: CentOS-8-5-2111
         service_offering: 2C-4GB-RBD
@@ -35,6 +36,7 @@
         api_url: "{{ MOLD_API_URL }}"
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
+        zone: Zone
         network: sjNW
       register: ac_public_ip
 
@@ -44,6 +46,7 @@
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_addrss: "{{ ac_public_ip} }}"
+        zone: Zone
         vm: sj-deploy-vm1
       delegate_to: localhost
 
@@ -59,6 +62,7 @@
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_address: "{{ ac_public_ip} }}"
+        zone: Zone
         start_port: 80
         end_port: 80
         protocol: tcp
@@ -70,6 +74,7 @@
         api_key: "{{ MOLD_API_KEY }}"
         api_secret: "{{ MOLD_SECRET_KEY }}"
         ip_address: "{{ ac_public_ip} }}"
+        zone: Zone
         start_port: 22
         end_port: 22
         protocol: tcp
