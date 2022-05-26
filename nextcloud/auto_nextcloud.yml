@@ -40,6 +40,10 @@
         network: sjNW
       register: ac_public_ip
 
+    - name: Public IP 정보 수집
+      debug:
+        msg: "{{ ac_public_ip.publicipaddress[0].ipaddress }}"
+
     - name: Create a static NAT for 'ac_public_ip' to sj-deploy-vm1
       cs_staticnat:
         api_url: "{{ MOLD_API_URL }}"
