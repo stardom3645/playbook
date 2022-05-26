@@ -12,7 +12,7 @@
         api_secret: "{{ MOLD_SECRET_KEY }}"
         zone: Zone
         name: sj-deploy-vm1
-        template: CentOS-8-5-2111
+        template: CentOS-8-5-2111-cloudinit
         service_offering: 2C-4GB-RBD
         ssh_key: AutomationController-hwryu
         networks:
