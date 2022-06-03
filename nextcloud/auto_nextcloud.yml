@@ -12,13 +12,13 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         name: sj-deploy-vm1
-        template: CentOS-8-5-2111-cloudinit
+        template: AutomationController-0525
         service_offering: 2C-4GB-RBD
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
         user_data: |
             #cloud-config
             disable_root: false
-            ssh_pwauth: True
+            ssh_pwauth: true
         networks:
           - genie-network1
       delegate_to: localhost
