@@ -7,23 +7,23 @@
 
     - name: 가상머신 생성
       cs_instance:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
-        zone: Zone
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         name: sj-deploy-vm1
         template: CentOS-8-5-2111-cloudinit
         service_offering: 2C-4GB-RBD
-        ssh_key: AutomationController-hwryu
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
         networks:
           - genie-network1
       delegate_to: localhost
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
@@ -34,10 +34,10 @@
 
     - name: Create Public IP
       cs_ip_address:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
-        zone: Zone
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         network: genie-network1
       register: ac_public_ip
 
@@ -47,11 +47,11 @@
 
     - name: Create a static NAT for 'ac_public_ip.ip_address' to sj-deploy-vm1
       cs_staticnat:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: Zone
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         vm: sj-deploy-vm1
       delegate_to: localhost
 
@@ -63,11 +63,11 @@
 
     - name: Allow 88 port for public ip
       cs_firewall:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: Zone
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         start_port: 80
         end_port: 80
         protocol: tcp
@@ -75,11 +75,11 @@
 
     - name: Allow 22 port for public ip
       cs_firewall:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: Zone
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         start_port: 22
         end_port: 22
         protocol: tcp
