@@ -20,7 +20,7 @@
             disable_root: false
             ssh_pwauth: true
         networks:
-          - genie-network1
+          - sjtest
       delegate_to: localhost
 
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
@@ -46,7 +46,7 @@
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        network: genie-network1
+        network: sjtest
       register: ac_public_ip
 
     - name: Public IP 정보 수집
