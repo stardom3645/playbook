@@ -7,9 +7,9 @@
 
     - name: 배포한 가상머신 정보 수집
       cs_instance_info:
-        api_url: "{{ MOLD_API_URL }}"
-        api_key: "{{ MOLD_API_KEY }}"
-        api_secret: "{{ MOLD_SECRET_KEY }}"
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         name: sj-deploy-vm1
       delegate_to: localhost
       register: vm
