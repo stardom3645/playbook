@@ -29,8 +29,8 @@
   hosts: deployVmIp
   gather_facts: no
   vars:
-    ansible_user: root
-    ansible_ssh_pass: Ablecloud1!
+    #ansible_user: root
+    #ansible_ssh_pass: Ablecloud1!
 
     httpd_packages:
       - "httpd"
