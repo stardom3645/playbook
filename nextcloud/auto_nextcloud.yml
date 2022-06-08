@@ -11,7 +11,7 @@
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: sj-deploy-vm1
+        name: nextcloud-deploy-vm
         template: CentOS-8-5-2111-cloudinit
         service_offering: 2C-4GB-RBD
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -19,8 +19,7 @@
             #cloud-config
             disable_root: false
             ssh_pwauth: true
-        networks:
-          - sjtest
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
       delegate_to: localhost
 
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
@@ -32,7 +31,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: sj-deploy-vm1
+        name: nextcloud-deploy-vm
       delegate_to: localhost
       register: vm
 
@@ -46,21 +45,21 @@
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        network: sjtest
+        network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
       register: ac_public_ip
 
     - name: Public IP 정보 수집
       debug:
         msg: "{{ ac_public_ip.ip_address }}"
 
-    - name: Create a static NAT for 'ac_public_ip.ip_address' to sj-deploy-vm1
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to nextcloud-deploy-vm
       cs_staticnat:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        vm: sj-deploy-vm1
+        vm: nextcloud-deploy-vm
       delegate_to: localhost
 
     - name: 배포 가상머신 인메모리 inventory에 등록
