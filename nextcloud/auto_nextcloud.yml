@@ -202,14 +202,14 @@
         group: "apache"
         setype: "httpd_sys_rw_content_t"
       become: true
-    - name: "Configure Nextcloud - httpd"
-      ansible.builtin.template:
-        src: "/home/runner/nextcloud.conf.j2"
-        dest: "/etc/httpd/conf.d/nextcloud.conf"
-        owner: "root"
-        group: "root"
-        mode: 0644
-      become: true
+    # - name: "Configure Nextcloud - httpd"
+    #   ansible.builtin.template:
+    #     src: "/home/runner/nextcloud.conf.j2"
+    #     dest: "/etc/httpd/conf.d/nextcloud.conf"
+    #     owner: "root"
+    #     group: "root"
+    #     mode: 0644
+    #   become: true
       #notify:
       #  - "Restart httpd"
     - name: Restart httpd service
@@ -255,17 +255,17 @@
         path: "/var/www/html/nextcloud/config/CAN_INSTALL"
       register: "r_CAN_INSTALL"
       become: true
-    - name: "Configure Nextcloud - autoconfig"
-      ansible.builtin.template:
-        src: "/home/runner/autoconfig.php.j2"
-        dest: "/var/www/html/nextcloud/config/autoconfig.php"
-        owner: "apache"
-        group: "apache"
-        mode: 0640
-        setype: "httpd_sys_rw_content_t"
-      become: true
-      when:
-        - "r_CAN_INSTALL.stat.exists | bool"
+    # - name: "Configure Nextcloud - autoconfig"
+    #   ansible.builtin.template:
+    #     src: "/home/runner/autoconfig.php.j2"
+    #     dest: "/var/www/html/nextcloud/config/autoconfig.php"
+    #     owner: "apache"
+    #     group: "apache"
+    #     mode: 0640
+    #     setype: "httpd_sys_rw_content_t"
+    #   become: true
+    #   when:
+    #     - "r_CAN_INSTALL.stat.exists | bool"
     # firewall
     - name: "Install firewalld"
       ansible.builtin.package:

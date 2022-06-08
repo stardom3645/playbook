@@ -68,8 +68,7 @@
       ansible.builtin.package:
         name: "{{ httpd_packages }}"
         state: "present"
-      become: no
-      become_user: nobody
+      become: true
     - name: "Install php"
       ansible.builtin.package:
         name: "{{ php_packages }}"
