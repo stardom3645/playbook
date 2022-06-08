@@ -29,17 +29,11 @@
   hosts: deployVmIp
   gather_facts: no
   tasks:
-    # httpd
-    - name: "State Httpd"
-      command: systemctl status httpd
-      register: statehttpdout
-      failed_when: "'FAILED' in statehttpdout.stderr"
-    # - name: "debug"
-    #   ansible.builtin.debug:
-    #     msg: "{{ statehttpdout.stdout }}"
-    # - name: "debug"
-    #   ansible.builtin.debug:
-    #     msg: "{{ statehttpdout.stderr }}"
-    - name: "debug2"
-      ansible.builtin.debug:
-        msg: "{{ statehttpdout.active }}"
+      - name: populate service facts
+        service_facts:
+      - debug:
+        var: services['systemd-httpd.service']
+    # - name: "State Httpd"
+    #   command: systemctl status httpd
+    #   register: statehttpdout
+    #   failed_when: "'FAILED' in statehttpdout.stderr"
