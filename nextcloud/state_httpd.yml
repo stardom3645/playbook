@@ -31,8 +31,9 @@
   tasks:
     # httpd
     - name: "State Httpd"
-      register: statehttpdout
       command: systemctl status httpd
+      register: statehttpdout
+      failed_when: "'FAILED' in statehttpdout.stderr"
     - name: "debug"
       ansible.builtin.debug:
         msg: "{{ statehttpdout.stdout }}"
