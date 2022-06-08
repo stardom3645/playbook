@@ -30,5 +30,8 @@
   gather_facts: no
   tasks:
     # httpd
-    - name: "State Httpd"  
+    - name: "State Httpd"
+      register: statehttpdout
       command: systemctl status httpd
+    - debug:
+      msg: "{{ statehttpdout.stdout }}"
