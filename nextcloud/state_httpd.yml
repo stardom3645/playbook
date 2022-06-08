@@ -37,9 +37,9 @@
     # - name: "debug"
     #   ansible.builtin.debug:
     #     msg: "{{ statehttpdout.stdout }}"
-    - name: "debug"
-      ansible.builtin.debug:
-        msg: "{{ statehttpdout.stderr }}"
+    # - name: "debug"
+    #   ansible.builtin.debug:
+    #     msg: "{{ statehttpdout.stderr }}"
     - name: "debug2"
       ansible.builtin.debug:
         msg: "{{ statehttpdout.active }}"
