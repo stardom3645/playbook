@@ -29,5 +29,7 @@
   hosts: deployVmIp
   gather_facts: no
   tasks:
+    - name: populate service facts
+      service_facts:
     - ansible.builtin.debug:
       var: services['systemd-httpd.service']
