@@ -33,5 +33,6 @@
     - name: "State Httpd"
       register: statehttpdout
       command: systemctl status httpd
-    - debug:
-      msg: "{{ statehttpdout.stdout }}"
+    - name: "debug"
+      ansible.builtin.debug:
+        msg: "{{ statehttpdout.stdout }}"
