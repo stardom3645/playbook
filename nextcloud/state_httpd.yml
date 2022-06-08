@@ -28,4 +28,7 @@
 - name: "State Httpd"
   hosts: deployVmIp
   gather_facts: no
-  command: systemctl status httpd
+  tasks:
+    # httpd
+    - name: "State Httpd"  
+      command: systemctl status httpd
