@@ -1,12 +1,47 @@
 ---
 - name: State Httpd
-  hosts: 10.10.3.35
+  hosts: localhost
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
 
+    - name: 배포한 가상머신 정보 수집
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: nextcloud-deploy-vm
+      delegate_to: localhost
+      register: vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+        groups:
+          - deployVmIp
+    
+##### State Httpd #####
+- name: "State Httpd"
+  hosts: 10.10.3.35
+  gather_facts: no
+  vars:
+    - service: httpd.service
+  tasks:
+    # - name: populate service facts
+    #   ansible.builtin.service_facts:
+    # - debug: var=services[service]['status']
+    # - debug:
+    #     msg: "{{ services[service]['status'] }}"
+
     - name: register resource
-      ansible.builtin.command: "touch /home/runner/test123.sh"
+      ansible.builtin.command: "python2 /genie/api/cs_api.py -c listAutomationDeployedResource -ip 10.10.254.168 -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg -n ServiceName2"
+    
+
+
 
     # - debug: var=services_state.ansible_facts.services["httpd.service"].state
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
