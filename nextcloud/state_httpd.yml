@@ -34,5 +34,5 @@
       register: services_state
     - debug: var=services_state.ansible_facts.services["httpd.service"].state
       register: result
-    - debug: var=result
+    - debug: var=result.services_state.ansible_facts.services["httpd.service"].state
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
