@@ -28,13 +28,14 @@
 - name: "State Httpd"
   hosts: deployVmIp
   gather_facts: no
-  vars:
-    - stateChk: services_state.ansible_facts.services["httpd.service"].state
+  # vars:
+  #   - stateChk: services_state.ansible_facts.services["httpd.service"].state
   tasks:
     - name: populate service facts
       ansible.builtin.service_facts:
-      register: services_state
-    - debug: var={{stateChk}}
+      # register: services_state
+    - debug: var=ansible_facts.services.httpd.state
+    # - debug: var=services_state.ansible_facts.services["httpd.service"].state
       register: result
-    - debug: var=result.{{stateChk}}
+    - debug: var=result.ansible_facts.services.httpd.state
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
