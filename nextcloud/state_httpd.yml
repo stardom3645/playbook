@@ -24,7 +24,7 @@
         groups:
           - deployVmIp
     - name: register resource
-      shell: "touch /home/runner/test.sh"
+      shell: "touch /home/runner/test2.sh"
 
     # - debug: var=services_state.ansible_facts.services["httpd.service"].state
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
