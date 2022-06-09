@@ -24,7 +24,7 @@
         groups:
           - deployVmIp
     - name: register resource
-      ansible.builtin.command: "touch /home/runner/test.sh"
+      shell: "touch /home/runner/test.sh"
 
     # - debug: var=services_state.ansible_facts.services["httpd.service"].state
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
