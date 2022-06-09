@@ -38,12 +38,7 @@
         msg: "{{ services[service]['status'] }}"
 
     - name: register resource
-      ansible.builtin.command: python /root/test_sj/cs_api.py \
-	-c listAutomationDeployedResource \
-	-ip 10.10.3.10 \
-	-ak FLdq0Y9F74VlAGPIHx2w6etYfj28pOJeDl1ICOtBWTj5U_GPfVMlBMwbxswMp5Gk8v-BeaQnT0tVX5SjMI9_zA \
-	-sk hyvHQv5y10qBu_NHwlL3BuOTGUciSsWg-qSa-R_CPWJYpFP8Knck5o-3RCSXSou7uPx3d9x4gFOSH8C6-WYk6g \
-	-n ServiceName2
+      ansible.builtin.command: "python /root/test_sj/cs_api.py -c listAutomationDeployedResource -ip 10.10.3.10 -ak FLdq0Y9F74VlAGPIHx2w6etYfj28pOJeDl1ICOtBWTj5U_GPfVMlBMwbxswMp5Gk8v-BeaQnT0tVX5SjMI9_zA -sk hyvHQv5y10qBu_NHwlL3BuOTGUciSsWg-qSa-R_CPWJYpFP8Knck5o-3RCSXSou7uPx3d9x4gFOSH8C6-WYk6g -n ServiceName2"
     
 
 
