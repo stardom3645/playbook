@@ -34,7 +34,7 @@
     - name: populate service facts
       ansible.builtin.service_facts:
       register: services_state
-    - debug: var=stateChk
+    - debug: var={{stateChk}}
       register: result
-    - debug: var=result.stateChk
+    - debug: var=result.{{stateChk}}
     # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
