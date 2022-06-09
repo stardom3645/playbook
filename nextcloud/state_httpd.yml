@@ -30,6 +30,6 @@
   gather_facts: no
   tasks:
     - name: populate service facts
-      service_facts:
-    - ansible.builtin.debug:
-      var: services['systemd-httpd.service']
+      ansible.builtin.service_facts:
+      register: services_state
+  - debug: var=services_state.ansible_facts.services.httpd.service.state
