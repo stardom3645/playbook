@@ -32,6 +32,5 @@
     - name: populate service facts
       ansible.builtin.service_facts:
       register: services_state
-    - debug: var=services_state.ansible_facts.services["httpd"].state
-    - debug: var=services_state.ansible_facts.services["httpd.service"].state 
-    - debug: var=services_state.ansible_facts.services["mysqld.service"].state 
+    - debug: var=services_state.ansible_facts.services["httpd.service"].state
+    - debug: var=services_state.ansible_facts.services["mysqld.service"].state
