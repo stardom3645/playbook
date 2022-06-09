@@ -1,22 +1,9 @@
 ---
 - name: State Httpd
-  hosts: localhost
+  hosts: 10.10.3.35
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
-
-    - name: 배포한 가상머신 정보 수집
-      cs_instance_info:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: nextcloud-deploy-vm
-      delegate_to: localhost
-      register: vm
-
-    - name: 배포 가상머신 ip 정보 수집
-      debug:
-        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
     - name: register resource
       ansible.builtin.command: "touch /home/runner/test123.sh"
