@@ -33,8 +33,7 @@
   tasks:
     - name: populate service facts
       ansible.builtin.service_facts:
-    - debug:
-      msg: "{{ services[service]['status'] }}"
+    - debug: var=services[service]['status']
 
     
 
