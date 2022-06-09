@@ -38,4 +38,4 @@
 
     - name: 서비스 상태
       debug:
-        msg: "{{ state }}"
+        msg: "{{ state.stdout }}"
