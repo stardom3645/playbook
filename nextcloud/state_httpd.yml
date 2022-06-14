@@ -25,17 +25,18 @@
           - deployVmIp
     
 ##### State Httpd #####
-# - name: "State Httpd"
-#   hosts: deployVmIp
-#   gather_facts: no
-#   vars:
-#     - service: httpd.service
-#   tasks:
-#     - name: populate service facts
-#       ansible.builtin.service_facts:
-#     - debug: var=services[service]['status']
-#     - debug:
-#         msg: "{{ services[service]['status'] }}"
+- name: "State Httpd"
+  hosts: deployVmIp
+  gather_facts: no
+  vars:
+    - service: httpd.service
+  tasks:
+    - name: populate service facts
+      ansible.builtin.service_facts:
+    - debug: var=services[service]['status']
+    - debug:
+        msg: "{{ services[service]['status'] }}"
+      register: http_status
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
@@ -60,19 +61,9 @@
       debug:
         msg: "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}"
 
-
-
-    - name: "State Httpd"
-      hosts: deployVmIp
-      gather_facts: no
-      vars:
-        - service: httpd.service
-      tasks:
-        - name: populate service facts
-          ansible.builtin.service_facts:
-        - debug: var=services[service]['status']
-        - debug:
-            msg: "{{ services[service]['status'] }}"
+    - name: debug http status
+      debug:
+        msg: "{{ services }}"
 
 
     - name: register resource
