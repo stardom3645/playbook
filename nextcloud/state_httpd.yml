@@ -40,8 +40,8 @@
     - name: populate service facts
       ansible.builtin.service_facts:
     - debug: var=services[service]['status']
-    - debug:
-        var: "{{ services[service]['status'] }}"
+    # - debug:
+    #     var: "{{ services[service]['status'] }}"
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
