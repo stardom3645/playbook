@@ -53,10 +53,10 @@
     - name: debug list stdout
       debug:
         msg: "{{ list.stdout }}"
-        register: list_stdout
+      register: list_stdout
     - name: debug list stdout2
       debug:
-        msg: "{{ list.listautomationdeployedresourceresponse.automationdeployedresource.name }}"
+        msg: "{{ list_stdout.listautomationdeployedresourceresponse.automationdeployedresource.name }}"
     - name: debug list stdout_lines
       debug:
         msg: "{{ list.stdout_lines }}"
