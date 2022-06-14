@@ -69,7 +69,7 @@
 
     - name: debug http status
       debug:
-        msg: "{{ http_status }}"
+        msg: "{{ services[service]['status'] }}"
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c addDeployedUnitResource \
