@@ -51,12 +51,12 @@
         -n Nextcloud
       register: list
     - name: debug list stdout
-      debug:
-        msg: "{{ list.stdout }}"
+      set_fact:
+        jsondata: "{{ list.stdout | from_json }}"
     #   register: list_stdout
     - name: debug list stdout2
       debug:
-        msg: "{{ list.stdout|from_json }}"
+        msg: "{{ list.listautomationdeployedresourceresponse.automationdeployedresource[0].name }}"
     #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
     # - name: debug list stdout_lines
     #   debug:
