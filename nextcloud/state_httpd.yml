@@ -67,6 +67,9 @@
       debug:
         msg: "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}"
 
+    - name: debug http status
+      debug:
+        msg: "{{ http_status }}"
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c addDeployedUnitResource \
