@@ -36,7 +36,9 @@
     - debug: var=services[service]['status']
     - debug:
         msg: "{{ services[service]['status'] }}"
-      register: http_status
+    - name: debug set fact
+      set_fact:
+        http_status: "{{ services[service]['status'] }}"
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
