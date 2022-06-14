@@ -52,11 +52,11 @@
       register: list
     - name: debug list stdout
       debug:
-        msg: "{{ list.stdout|from_json|json_query('listautomationdeployedresourceresponse.automationdeployedresource[0].name') }}"
+        msg: "{{ list.stdout }}"
     #   register: list_stdout
-    # - name: debug list stdout2
-    #   debug:
-    #     msg: "{{ list_stdout }}"
+    - name: debug list stdout2
+      debug:
+        msg: "{{ list.stdout|from_json }}"
     #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
     # - name: debug list stdout_lines
     #   debug:
