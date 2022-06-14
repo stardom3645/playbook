@@ -68,7 +68,7 @@
         -gid {{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }} \
         -vid 98fb8532-c4fe-432c-a301-d5d60936ad22 \
         -un httpd2 \
-        -s Running
+        -s {{ services[service]['status'] }}
 
     #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
     # - name: debug list stdout_lines
