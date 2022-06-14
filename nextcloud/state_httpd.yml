@@ -52,6 +52,10 @@
       register: list
     - name: debug list stdout
       debug:
+        msg: "{{ list.stdout }}"
+        register: list_stdout
+    - name: debug list stdout2
+      debug:
         msg: "{{ list.listautomationdeployedresourceresponse.automationdeployedresource.name }}"
     - name: debug list stdout_lines
       debug:
