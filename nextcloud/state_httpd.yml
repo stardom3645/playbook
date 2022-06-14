@@ -36,6 +36,7 @@
     - debug: var=services[service]['status']
     - debug:
         msg: "{{ services[service]['status'] }}"
+        var: http_status
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
@@ -68,7 +69,7 @@
         -gid {{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }} \
         -vid 98fb8532-c4fe-432c-a301-d5d60936ad22 \
         -un httpd2 \
-        -s {{ services[service]['status'] }}
+        -s {{ http_status }}
 
     #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
     # - name: debug list stdout_lines
