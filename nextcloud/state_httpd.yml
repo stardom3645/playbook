@@ -26,19 +26,29 @@
     
 ##### State Httpd #####
 - name: "State Httpd"
-  hosts: localhost
+  hosts: deployVmIp
   gather_facts: no
   vars:
     - service: httpd.service
   tasks:
-    # - name: populate service facts
-    #   ansible.builtin.service_facts:
-    # - debug: var=services[service]['status']
-    # - debug:
-    #     msg: "{{ services[service]['status'] }}"
+    - name: populate service facts
+      ansible.builtin.service_facts:
+    - debug: var=services[service]['status']
+    - debug:
+        msg: "{{ services[service]['status'] }}"
 
+##### Save State Httpd #####
+- name: "Save State Httpd"
+  hosts: localhost
+  gather_facts: no
+  tasks:
     - name: register resource
-      ansible.builtin.command: python2 /home/runner/cs_api.py -c listAutomationDeployedResource -ip 10.10.254.168 -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg -n ServiceName2
+      ansible.builtin.command: python mold_genie_api.py \
+        -c listAutomationDeployedResource \
+        -ip 10.10.254.168 \
+        -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
+        -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
+        -n Nextcloud
       register: list
     - name: debug list stdout
       debug:
@@ -46,7 +56,6 @@
     - name: debug list stdout_lines
       debug:
         msg: "{{ list.stdout_lines }}"
-
 
 
     # - debug: var=services_state.ansible_facts.services["httpd.service"].state

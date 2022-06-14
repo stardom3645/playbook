@@ -5,7 +5,7 @@
   tasks:
 ##### Deploy VirtualMachine #####
 
-    - name: 가상머신 생성
+    - name: 가상머신 생성 'nextcloud-deploy-vm'
       cs_instance:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
