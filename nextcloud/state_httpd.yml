@@ -63,7 +63,7 @@
 
     - name: debug http status
       debug:
-        msg: "{{ services }}"
+        msg: "{{ http_status }}"
 
 
     - name: register resource
