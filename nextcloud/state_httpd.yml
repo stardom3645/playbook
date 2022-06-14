@@ -39,9 +39,10 @@
     #     var: http_status
     - name: populate service facts
       ansible.builtin.service_facts:
-        debug: var=services[service]['status']
+    - debug: var=services[service]['status']
     - debug:
         msg: "{{ services[service]['status'] }}"
+      register: http_status
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
