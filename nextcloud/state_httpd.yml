@@ -52,11 +52,13 @@
       register: list
     - name: debug list stdout
       set_fact:
-        jsondata: "{{ list.stdout | from_json }}"
+        list_jsondata: "{{ list.stdout | from_json }}"
     #   register: list_stdout
+    - debug:
+        var: list_jsondata
     - name: debug list stdout2
       debug:
-        msg: "{{ list.listautomationdeployedresourceresponse.automationdeployedresource[0].name }}"
+        msg: "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].name }}"
     #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
     # - name: debug list stdout_lines
     #   debug:
