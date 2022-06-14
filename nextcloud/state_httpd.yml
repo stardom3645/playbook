@@ -43,7 +43,7 @@
   gather_facts: no
   tasks:
     - name: register resource
-      ansible.builtin.command: python /home/runner/mold_genie_api.py \
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c listAutomationDeployedResource \
         -ip 10.10.254.168 \
         -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
