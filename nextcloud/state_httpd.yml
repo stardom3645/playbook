@@ -37,7 +37,6 @@
     - debug:
         msg: "{{ services[service]['status'] }}"
         register: http_status
-        var: http_status
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
