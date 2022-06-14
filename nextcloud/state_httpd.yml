@@ -52,15 +52,15 @@
       register: list
     - name: debug list stdout
       debug:
-        msg: "{{ list.stdout }}"
-      register: list_stdout
-    - name: debug list stdout2
-      debug:
-        msg: "{{ list_stdout }}"
-        #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
-    - name: debug list stdout_lines
-      debug:
-        msg: "{{ list.stdout_lines }}"
+        msg: "{{ list.stdout|from_json|json_query('listautomationdeployedresourceresponse.automationdeployedresource[0].name') }}"
+    #   register: list_stdout
+    # - name: debug list stdout2
+    #   debug:
+    #     msg: "{{ list_stdout }}"
+    #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
+    # - name: debug list stdout_lines
+    #   debug:
+    #     msg: "{{ list.stdout_lines }}"
 
 
     # - debug: var=services_state.ansible_facts.services["httpd.service"].state
