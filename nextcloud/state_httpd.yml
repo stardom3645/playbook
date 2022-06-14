@@ -39,7 +39,7 @@
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
-  hosts: localhost
+  hosts: 10.10.3.47
   gather_facts: no
   tasks:
     - name: register resource
