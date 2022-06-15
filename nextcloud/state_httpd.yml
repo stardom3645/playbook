@@ -73,7 +73,7 @@
     #     var: result_jsondata
     - name: debug result stdout2
       debug:
-        msg: "{{ result.stdout }}"
+        msg: "{{ result }}"
 
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
