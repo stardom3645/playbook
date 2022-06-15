@@ -289,3 +289,39 @@
       loop:
         - "http"
         - "https"
+
+- name: 서비스 상태체크 템플릿 및 스케줄러 생성
+  hosts: localhost
+  vars:
+    base_path: 'genie'
+    genie_ip: 'localhost'
+  gather_facts: no
+  tasks:
+    - name: AWX 초기 관리자 패스워드 추출
+      shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+      register: admin_password
+
+    - name: Genie job 템플릿 생성
+      awx.awx.job_template:
+        name: "status_nextcloud"
+        job_type: "run"
+        inventory: "Demo Inventory"
+        project: "sj-git"
+        playbook: "nextcloud/state_httpd.yml"
+        credentials:
+          - "Automation Controller Credential"
+        state: "present"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
+      register: template_info
+
+    - name: Genie job 스케줄러 생성
+      awx.awx.schedule:
+        name: status_nextcloud
+        state: present
+        unified_job_template: "{{ template_info.name }}"
+        rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
