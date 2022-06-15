@@ -65,32 +65,27 @@
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl status httpd"
-      register: result
-    # - name: debug list stdout
-    #   set_fact:
-    #     result_jsondata: "{{ result.stdout | from_json }}"
-    # - debug:
-    #     var: result_jsondata
-    - name: debug result stdout2
-      debug:
-        msg: "{{ result }}"
+      ignore_errors: yes
+      changed_when: false
+      register: service_httpd_status
+    - name: ssh result
+      fail:
+        msg: |
+          Service httpd is not running.
+          Return code from `pgrep`:
+          {{ service_httpd_status.rc }}
+      when: service_httpd_status.rc != 0
+      
+      # debug:
+      #   msg: "{{ result }}"
 
-    - name: register resource
-      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
-        -c addDeployedUnitResource \
-        -ip 10.10.254.168 \
-        -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
-        -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
-        -gid {{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }} \
-        -vid 98fb8532-c4fe-432c-a301-d5d60936ad22 \
-        -un httpd2 \
-        -s {{ services[service]['status'] }}
-
-    #     #.listautomationdeployedresourceresponse.automationdeployedresource[0].name
-    # - name: debug list stdout_lines
-    #   debug:
-    #     msg: "{{ list.stdout_lines }}"
-
-
-    # - debug: var=services_state.ansible_facts.services["httpd.service"].state
-    # - debug: var=services_state.ansible_facts.services["mysqld.service"].state
+    # - name: register resource
+    #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+    #     -c addDeployedUnitResource \
+    #     -ip 10.10.254.168 \
+    #     -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
+    #     -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
+    #     -gid {{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }} \
+    #     -vid 98fb8532-c4fe-432c-a301-d5d60936ad22 \
+    #     -un httpd2 \
+    #     -s {{ services[service]['status'] }}
