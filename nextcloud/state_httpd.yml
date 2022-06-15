@@ -65,19 +65,11 @@
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl status httpd"
-      ignore_errors: yes
-      changed_when: false
-      register: service_httpd_status
-    - name: ssh result
-      fail:
-        msg: |
-          Service httpd is not running.
-          Return code from `pgrep`:
-          {{ service_httpd_status.rc }}
-      when: service_httpd_status.rc != 0
+      debug:
+        msg: "{{ result }}"
+      # when: service_httpd_status.rc != 0
       
-      # debug:
-      #   msg: "{{ result }}"
+      
 
     # - name: register resource
     #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
