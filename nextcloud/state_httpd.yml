@@ -65,8 +65,10 @@
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl status httpd"
-      debug:
-        msg: "{{ result }}"
+      register: result
+    - name: debug result stdout2
+    debug:
+      msg: "{{ result }}"
       # when: service_httpd_status.rc != 0
       
       
