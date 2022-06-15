@@ -65,11 +65,9 @@
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} date
-
-    - name: debug http status
+      register: result
       debug:
-        msg: "{{ http_status }}"
-
+        msg: "{{ result }}"
 
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
