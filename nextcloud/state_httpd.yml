@@ -10,7 +10,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: nextcloud-deploy-vm1
+        name: nextcloud-deploy-vm3
       delegate_to: localhost
       register: vm
 
