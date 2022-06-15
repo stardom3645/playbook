@@ -18,27 +18,27 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: 배포 가상머신 인메모리 inventory에 등록
-      add_host:
-        hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
-        groups:
-          - deployVmIp
+    # - name: 배포 가상머신 인메모리 inventory에 등록
+    #   add_host:
+    #     hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+    #     groups:
+    #       - deployVmIp
     
 ##### State Httpd #####
-- name: "State Httpd"
-  hosts: deployVmIp
-  gather_facts: no
-  vars:
-    - service: httpd.service
-  tasks:
-    - name: populate service facts
-      ansible.builtin.service_facts:
-    - debug: var=services[service]['status']
-    - debug:
-        msg: "{{ services[service]['status'] }}"
-    - name: debug set fact
-      set_fact:
-        http_status: "{{ services[service]['status'] }}"
+# - name: "State Httpd"
+#   hosts: deployVmIp
+#   gather_facts: no
+#   vars:
+#     - service: httpd.service
+#   tasks:
+#     - name: populate service facts
+#       ansible.builtin.service_facts:
+#     - debug: var=services[service]['status']
+#     - debug:
+#         msg: "{{ services[service]['status'] }}"
+#     - name: debug set fact
+#       set_fact:
+#         http_status: "{{ services[service]['status'] }}"
 
 ##### Save State Httpd #####
 - name: "Save State Httpd"
