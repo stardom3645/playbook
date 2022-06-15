@@ -63,6 +63,9 @@
       debug:
         msg: "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}"
 
+    - name: ssh
+      ansible.builtin.command: ssh root@deployVmIp date
+
     - name: debug http status
       debug:
         msg: "{{ http_status }}"
