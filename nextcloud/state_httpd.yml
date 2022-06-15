@@ -66,6 +66,7 @@
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} date
       register: result
+    - name: ssh debug
       debug:
         msg: "{{ result }}"
 
