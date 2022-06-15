@@ -11,7 +11,7 @@
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: nextcloud-deploy-vm
+        name: nextcloud-deploy-vm3
         template: CentOS-8-5-2111-cloudinit
         service_offering: 2C-4GB-RBD
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -31,7 +31,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: nextcloud-deploy-vm
+        name: nextcloud-deploy-vm3
       delegate_to: localhost
       register: vm
 
@@ -59,7 +59,7 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        vm: nextcloud-deploy-vm
+        vm: nextcloud-deploy-vm3
       delegate_to: localhost
 
     - name: 배포 가상머신 인메모리 inventory에 등록
