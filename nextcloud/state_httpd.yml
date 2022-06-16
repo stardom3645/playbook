@@ -48,6 +48,18 @@
       debug:
         msg: "{{ result.stdout }}"      
 
+    # 그룹등록
+    - name: register resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedResourceGroup \
+        -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -zid ec1b5efb-71e8-4ddb-88d1-2bba08047878 \
+        -n Nextcloud \
+        -d 'Nextcloud description'
+
+    # 서비스 단위별 상태 등록
     # - name: register resource
     #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
     #     -c addDeployedUnitResource \
