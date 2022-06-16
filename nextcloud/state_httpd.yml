@@ -94,7 +94,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
 
 
     # 서비스 단위별 상태체크
@@ -113,7 +113,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un httpd \
         -s {{ httpd_state_result.stdout }}
@@ -134,7 +134,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un mysqld \
         -s {{ mysqld_state_result.stdout }}
