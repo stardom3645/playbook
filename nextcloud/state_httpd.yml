@@ -51,16 +51,16 @@
 
     - name: debug resourceGroup stdout
       set_fact:
-        resourceGroup_jsondata: "{{ resourceGroup.stdout | from_json }}"
+        group_jsondata: "{{ resourceGroup.stdout | from_json }}"
     - debug:
-        var: resourceGroup_jsondata
+        var: group_jsondata
     - name: group resourceGroup count
       debug:
-        msg: "{{ resourceGroup_jsondata }}"
+        msg: "{{ group_jsondata }}"
 
     - name: resourceGroup result
       debug:
-        msg: "{{ resourceGroup_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
+        msg: "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
@@ -80,7 +80,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid group_id_or_uuid \
+        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
         -vid vm_id_or_uuid \
         -un mysqld \
         -s "{{ state_result.stdout }}"
