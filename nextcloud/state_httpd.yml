@@ -34,7 +34,7 @@
         var: list_jsondata
     - name: group list count
       debug:
-        msg: "{{ list_jsondata.listautomationdeployedresourceresponse }}"
+        msg: "{{ list_jsondata }}"
 
     # 그룹등록
     - name: register resource
@@ -50,11 +50,11 @@
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
-      register: result
+      register: state_result
       # delegate_to: genie_vm
     - name: ssh result
       debug:
-        msg: "{{ result.stdout }}"
+        msg: "{{ state_result.stdout }}"
 
     # 서비스 단위별 상태 삭제
 
@@ -69,7 +69,7 @@
         -gid group_id_or_uuid \
         -vid vm_id_or_uuid \
         -un mysqld \
-        -s Running
+        -s "{{ state_result.stdout }}"
 
 
 
