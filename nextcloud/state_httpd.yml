@@ -119,7 +119,7 @@
         -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un httpd \
-        -s {{ httpd_state_result.stdout }}
+        -s "{{ httpd_state_result.stdout }}"
 
     # 서비스 단위별 상태체크
     - name: ssh
@@ -140,5 +140,5 @@
         -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un mysqld \
-        -s {{ mysqld_state_result.stdout }}
+        -s "{{ mysqld_state_result.stdout }}"
 
