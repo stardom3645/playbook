@@ -49,32 +49,52 @@
       when: list_jsondata.listautomationdeployedresourceresponse == {}
       register: resourceGroup
 
-    - name: debug resourceGroup stdout
+    # 그룹조회
+    - name: 그룹 조회
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c listAutomationDeployedResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -n Nextcloud1
+      register: list2
+      
+    - name: debug list2 stdout
       set_fact:
-        group_jsondata: "{{ resourceGroup.stdout | from_json }}"
-      when: list_jsondata.listautomationdeployedresourceresponse == {}
+        list2_jsondata: "{{ list2.stdout | from_json }}"
     - debug:
-        var: group_jsondata
-      when: list_jsondata.listautomationdeployedresourceresponse == {}  
-    - name: group resourceGroup count
+        var: list2_jsondata
+    - name: group list2 count
       debug:
-        msg: "{{ group_jsondata }}"
-      when: list_jsondata.listautomationdeployedresourceresponse == {}  
+        msg: "{{ list2_jsondata }}"
 
-    - name: resourceGroup result
-      debug:
-        msg: "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
-      when: list_jsondata.listautomationdeployedresourceresponse == {}
+
+    # - name: debug resourceGroup stdout
+    #   set_fact:
+    #     group_jsondata: "{{ resourceGroup.stdout | from_json }}"
+    #   when: list_jsondata.listautomationdeployedresourceresponse == {}
+    # - debug:
+    #     var: group_jsondata
+    #   when: list_jsondata.listautomationdeployedresourceresponse == {}  
+    # - name: group resourceGroup count
+    #   debug:
+    #     msg: "{{ group_jsondata }}"
+    #   when: list_jsondata.listautomationdeployedresourceresponse == {}  
+
+    # - name: resourceGroup result
+    #   debug:
+    #     msg: "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
+    #   when: list_jsondata.listautomationdeployedresourceresponse == {}
 
 
     # 서비스 단위별 상태 삭제
-    - name: register unit resource
+    - name: delete unit resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c deleteDeployedUnitResource \
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
 
 
     # 서비스 단위별 상태체크
@@ -93,7 +113,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un httpd \
         -s {{ httpd_state_result.stdout }}
@@ -114,7 +134,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
+        -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un mysqld \
         -s {{ mysqld_state_result.stdout }}
