@@ -51,7 +51,7 @@
 
     - name: resourceGroup result
       debug:
-        msg: "{{ resourceGroup }}"
+        msg: "{{ resourceGroup.stdout.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
