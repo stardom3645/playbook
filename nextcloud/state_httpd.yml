@@ -81,7 +81,7 @@
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
-        -vid "{{ vm.instances[0].id }} \
+        -vid "{{ vm.instances[0].id }}" \
         -un mysqld \
         -s "{{ state_result.stdout }}"
 
