@@ -21,9 +21,9 @@
     - name: 그룹 조회
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c listAutomationDeployedResource \
-        -ip 10.10.254.168 \
-        -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
-        -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -n Nextcloud1
       register: list
       
@@ -40,10 +40,10 @@
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c addDeployedResourceGroup \
-        -ip 10.10.254.168 \
-        -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
-        -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
-        -zid e25ed923-ea85-4ad7-a71f-70cd9424afda \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
         -n Nextcloud1 \
         -d 'Nextcloud description'
       when: list_jsondata.listautomationdeployedresourceresponse == {}
@@ -51,11 +51,28 @@
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
       register: result
+      # delegate_to: genie_vm
     - name: ssh result
       debug:
         msg: "{{ result.stdout }}"
 
-    
+    # 서비스 단위별 상태 삭제
+
+
+    # 서비스 단위별 상태 등록
+    - name: register resource
+      ansible.builtin.command: python mold_genie_api.py \
+        -c addDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid group_id_or_uuid \
+        -vid vm_id_or_uuid \
+        -un mysqld \
+        -s Running
+
+
+
 
     # 서비스 단위별 상태 등록
     # - name: register resource
