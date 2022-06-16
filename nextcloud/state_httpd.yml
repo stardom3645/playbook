@@ -83,7 +83,7 @@
         -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un mysqld2 \
-        -s stopped
+        -s Stopped
 
 
 
