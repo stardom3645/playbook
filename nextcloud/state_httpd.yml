@@ -82,8 +82,8 @@
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
-        -un mysqld \
-        -s Running
+        -un mysqld2 \
+        -s stopped
 
 
 
