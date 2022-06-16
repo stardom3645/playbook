@@ -2,7 +2,7 @@
   hosts: localhost
   vars:
     base_path: 'genie'
-    genie_ip: '10.10.3.47'
+    genie_ip: 'localhost'
   gather_facts: no
   tasks:
     - name: AWX 초기 관리자 패스워드 추출

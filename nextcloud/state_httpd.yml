@@ -46,7 +46,7 @@
       register: result
     - name: ssh result
       debug:
-        msg: "{{ result }}"      
+        msg: "{{ result.stdout }}"      
 
     # - name: register resource
     #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
