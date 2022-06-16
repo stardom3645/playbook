@@ -305,7 +305,7 @@
       awx.awx.job_template:
         name: "status_nextcloud"
         job_type: "run"
-        inventory: "Demo Inventory"
+        inventory: "genie_inventory"
         project: "sj-git"
         playbook: "nextcloud/state_httpd.yml"
         credentials:
