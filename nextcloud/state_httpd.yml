@@ -49,9 +49,18 @@
       when: list_jsondata.listautomationdeployedresourceresponse == {}
       register: resourceGroup
 
+    - name: debug resourceGroup stdout
+      set_fact:
+        list_jsondata: "{{ resourceGroup.stdout | from_json }}"
+    - debug:
+        var: resourceGroup_jsondata
+    - name: group resourceGroup count
+      debug:
+        msg: "{{ resourceGroup_jsondata }}"
+
     - name: resourceGroup result
       debug:
-        msg: "{{ resourceGroup.stdout.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
+        msg: "{{ resourceGroup_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
