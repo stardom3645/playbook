@@ -47,6 +47,11 @@
         -n Nextcloud1 \
         -d 'Nextcloud description'
       when: list_jsondata.listautomationdeployedresourceresponse == {}
+      register: resourceGroup
+
+    - name: resourceGroup result
+      debug:
+        msg: "{{ resourceGroup }}"
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
