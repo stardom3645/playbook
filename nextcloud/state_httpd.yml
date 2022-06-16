@@ -1,6 +1,8 @@
 ---
 - name: State Httpd
   hosts: localhost
+  vars:
+    service_group: 'Nextcloud1'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
@@ -24,7 +26,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -n Nextcloud1
+        -n "{{ service_group }}"
       register: list
       
     - name: debug list stdout
@@ -44,7 +46,7 @@
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
-        -n Nextcloud1 \
+        -n "{{ service_group }}" \
         -d 'Nextcloud description'
       when: list_jsondata.listautomationdeployedresourceresponse == {}
       register: resourceGroup
@@ -56,7 +58,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -n Nextcloud1
+        -n "{{ service_group }}"
       register: list2
       
     - name: debug list2 stdout
