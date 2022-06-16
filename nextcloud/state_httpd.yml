@@ -51,7 +51,7 @@
 
     - name: debug resourceGroup stdout
       set_fact:
-        list_jsondata: "{{ resourceGroup.stdout | from_json }}"
+        resourceGroup_jsondata: "{{ resourceGroup.stdout | from_json }}"
     - debug:
         var: resourceGroup_jsondata
     - name: group resourceGroup count
