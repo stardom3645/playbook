@@ -55,7 +55,7 @@
         -ip 10.10.254.168 \
         -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
         -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
-        -zid ec1b5efb-71e8-4ddb-88d1-2bba08047878 \
+        -zid e25ed923-ea85-4ad7-a71f-70cd9424afda \
         -n Nextcloud2 \
         -d 'Nextcloud description'
 
