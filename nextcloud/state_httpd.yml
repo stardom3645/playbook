@@ -52,28 +52,41 @@
     - name: debug resourceGroup stdout
       set_fact:
         group_jsondata: "{{ resourceGroup.stdout | from_json }}"
+      when: list_jsondata.listautomationdeployedresourceresponse == {}
     - debug:
         var: group_jsondata
+      when: list_jsondata.listautomationdeployedresourceresponse == {}  
     - name: group resourceGroup count
       debug:
         msg: "{{ group_jsondata }}"
+      when: list_jsondata.listautomationdeployedresourceresponse == {}  
 
     - name: resourceGroup result
       debug:
         msg: "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}"
+      when: list_jsondata.listautomationdeployedresourceresponse == {}
 
+
+    # 서비스 단위별 상태 삭제
+    - name: register unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c deleteDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
+
+
+    # 서비스 단위별 상태체크
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
-      register: state_result
+      register: httpd_state_result
       # delegate_to: genie_vm
     - name: ssh result
       debug:
-        msg: "{{ state_result.stdout }}"
+        msg: "{{ httpd_state_result.stdout }}"
 
-    # 서비스 단위별 상태 삭제
-
-
-    # 서비스 단위별 상태 등록
+    # 서비스 단위별 상태 등록(httpd)
     - name: register unit resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c addDeployedUnitResource \
@@ -83,19 +96,26 @@
         -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un httpd \
-        -s {{ state_result.stdout }}
+        -s {{ httpd_state_result.stdout }}
 
+    # 서비스 단위별 상태체크
+    - name: ssh
+      ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
+      register: mysqld_state_result
+      # delegate_to: genie_vm
+    - name: ssh result
+      debug:
+        msg: "{{ mysqld_state_result.stdout }}"
 
+    # 서비스 단위별 상태 등록(mysqld)
+    - name: register unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
+        -vid "{{ vm.instances[0].id }}" \
+        -un mysqld \
+        -s {{ mysqld_state_result.stdout }}
 
-
-    # 서비스 단위별 상태 등록
-    # - name: register resource
-    #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
-    #     -c addDeployedUnitResource \
-    #     -ip 10.10.254.168 \
-    #     -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
-    #     -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
-    #     -gid {{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }} \
-    #     -vid 98fb8532-c4fe-432c-a301-d5d60936ad22 \
-    #     -un httpd2 \
-    #     -s {{ services[service]['status'] }}

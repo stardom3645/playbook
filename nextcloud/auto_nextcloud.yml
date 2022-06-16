@@ -291,7 +291,7 @@
         - "https"
 
 - name: 서비스 상태체크 템플릿 및 스케줄러 생성
-  hosts: localhost
+  hosts: genie_vm
   vars:
     base_path: 'genie'
     genie_ip: 'localhost'
