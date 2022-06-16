@@ -46,7 +46,7 @@
         -zid e25ed923-ea85-4ad7-a71f-70cd9424afda \
         -n Nextcloud1 \
         -d 'Nextcloud description'
-      when: list_jsondata.listautomationdeployedresourceresponse == ""
+      when: list_jsondata.listautomationdeployedresourceresponse == "{}"
 
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
