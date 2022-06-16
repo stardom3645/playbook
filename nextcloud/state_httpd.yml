@@ -83,7 +83,7 @@
         -gid "{{ group_jsondata.adddeployedresourcegroupresponse.automationdeployedresource.id }}" \
         -vid "{{ vm.instances[0].id }}" \
         -un mysqld \
-        -s "{{ state_result.stdout }}"
+        -s Running
 
 
 
