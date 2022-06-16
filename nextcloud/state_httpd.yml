@@ -52,9 +52,9 @@
     - name: register resource
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c addDeployedResourceGroup \
-        -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" \
-        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
-        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -ip 10.10.254.168 \
+        -ak ArfB-Y2r8LXfeWBmyNzpCgk1aOzg2s_O8PYXLX6uNRKg7lOWyd16nTshg4fsmEWs0dnEk8PIb0do0eczlysFpg \
+        -sk g8Cghfff4Fc-n_iEYoHDJxnIv6sB0wJFx1CwtgEvBwJZw-W41Dblg7FA-oWN_EfO_C__f90STJDOPwlx3ftkUg \
         -zid ec1b5efb-71e8-4ddb-88d1-2bba08047878 \
         -n Nextcloud \
         -d 'Nextcloud description'
