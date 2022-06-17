@@ -290,7 +290,11 @@
         - "http"
         - "https"
 
-- name: 서비스 상태체크 템플릿 및 스케줄러 생성
+    - name: "================instance info================"
+      msg: "name : nextcloud-deploy-vm \n ip : {{ vm.instances[0].nic[0].ipaddress }} "
+
+
+- name: 서비스 상태체크 스케줄러 생성
   hosts: genie_vm
   vars:
     base_path: 'genie'
@@ -301,26 +305,26 @@
       shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
       register: admin_password
 
-    - name: Genie job 템플릿 생성
-      awx.awx.job_template:
-        name: "status_nextcloud"
-        job_type: "run"
-        inventory: "genie_inventory"
-        project: "sj-git"
-        playbook: "nextcloud/state_httpd.yml"
-        credentials:
-          - "Automation Controller Credential"
-        state: "present"
-        controller_host: "http://{{ genie_ip }}:80"
-        controller_username: admin
-        controller_password: "{{ admin_password.stdout }}"
-      register: template_info
+    # - name: Genie job 템플릿 생성
+    #   awx.awx.job_template:
+    #     name: "status_nextcloud"
+    #     job_type: "run"
+    #     inventory: "genie_inventory"
+    #     project: "sj-git"
+    #     playbook: "nextcloud/state_httpd.yml"
+    #     credentials:
+    #       - "Automation Controller Credential"
+    #     state: "present"
+    #     controller_host: "http://{{ genie_ip }}:80"
+    #     controller_username: admin
+    #     controller_password: "{{ admin_password.stdout }}"
+    #   register: template_info
 
     - name: Genie job 스케줄러 생성
       awx.awx.schedule:
-        name: status_nextcloud
+        name: nextcloud_check
         state: present
-        unified_job_template: "{{ template_info.name }}"
+        unified_job_template: "nextcloud_check"
         rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
