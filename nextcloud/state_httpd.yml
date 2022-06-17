@@ -49,7 +49,6 @@
         -n "{{ service_group }}" \
         -d 'Nextcloud description'
       when: list_jsondata.listautomationdeployedresourceresponse == {}
-      register: resourceGroup
 
     # 그룹조회
     - name: 그룹 조회
@@ -93,13 +92,13 @@
     # 특정 그룹에 속한 서비스 단위 조회(--추가필요--)
 
     # 서비스 단위별 상태 삭제
-    # - name: delete unit resource
-    #   ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
-    #     -c deleteDeployedUnitResource \
-    #     -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
-    #     -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
-    #     -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-    #     -gid "{{ list_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+    - name: delete unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c deleteDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
 
 
     # 서비스 단위별 상태체크
