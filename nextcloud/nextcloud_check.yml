@@ -2,7 +2,8 @@
 - name: State Httpd
   hosts: localhost
   vars:
-    service_group: 'Nextcloud1'
+    instance_nm: 'nextcloud-deploy-vm'
+    service_group: 'Nextcloud'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
@@ -11,7 +12,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: nextcloud-deploy-vm3
+        name: "{{ instance_nm }}"
       delegate_to: localhost
       register: vm
 
