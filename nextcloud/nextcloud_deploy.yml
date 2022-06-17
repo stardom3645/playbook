@@ -1,17 +1,19 @@
 ---
 - name: Genie를 활용한 Mold VM 배포
   hosts: localhost
+  vars:
+    instance_nm: 'nextcloud-deploy-vm'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
 
-    - name: 가상머신 생성 'nextcloud-deploy-vm'
+    - name: 가상머신 생성 "{{ instance_nm }}"
       cs_instance:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: nextcloud-deploy-vm3
+        name: "{{ instance_nm }}"
         template: CentOS-8-5-2111-cloudinit
         service_offering: 2C-4GB-RBD
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -31,7 +33,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: nextcloud-deploy-vm3
+        name: "{{ instance_nm }}"
       delegate_to: localhost
       register: vm
 
@@ -52,14 +54,14 @@
       debug:
         msg: "{{ ac_public_ip.ip_address }}"
 
-    - name: Create a static NAT for 'ac_public_ip.ip_address' to nextcloud-deploy-vm
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ instance_nm }}"
       cs_staticnat:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ ac_public_ip.ip_address }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        vm: nextcloud-deploy-vm3
+        vm: "{{ instance_nm }}"
       delegate_to: localhost
 
     - name: 배포 가상머신 인메모리 inventory에 등록
@@ -291,7 +293,8 @@
         - "https"
 
     - name: "================instance info================"
-      msg: "name : nextcloud-deploy-vm \n ip : {{ vm.instances[0].nic[0].ipaddress }} "
+      debug:
+        msg: "name : {{ instance_nm }} \n ip : {{ vm.instances[0].nic[0].ipaddress }} "
 
 
 - name: 서비스 상태체크 스케줄러 생성
