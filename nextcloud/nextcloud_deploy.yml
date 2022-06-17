@@ -60,39 +60,39 @@
       debug:
         msg: "{{ ac_public_ip.ip_address }}"
 
-    # - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ instance_nm }}"
-    #   cs_staticnat:
-    #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-    #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-    #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-    #     ip_address: "{{ ac_public_ip.ip_address }}"
-    #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-    #     vm: "{{ instance_nm }}"
-    #   delegate_to: localhost
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ instance_nm }}"
+      cs_staticnat:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        vm: "{{ instance_nm }}"
+      delegate_to: localhost
 
-    # - name: Allow 88 port for public ip
-    #   cs_firewall:
-    #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-    #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-    #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-    #     ip_address: "{{ ac_public_ip.ip_address }}"
-    #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-    #     start_port: 80
-    #     end_port: 80
-    #     protocol: tcp
-    #   delegate_to: localhost
+    - name: Allow 88 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 80
+        end_port: 80
+        protocol: tcp
+      delegate_to: localhost
 
-    # - name: Allow 22 port for public ip
-    #   cs_firewall:
-    #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-    #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-    #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-    #     ip_address: "{{ ac_public_ip.ip_address }}"
-    #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-    #     start_port: 22
-    #     end_port: 22
-    #     protocol: tcp
-    #   delegate_to: localhost
+    - name: Allow 22 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 22
+        end_port: 22
+        protocol: tcp
+      delegate_to: localhost
 
 ##### Deploy Nextcloud #####
 - name: "Deploy Nextcloud"
@@ -291,11 +291,6 @@
       loop:
         - "http"
         - "https"
-
-    - name: "================instance info================"
-      debug:
-        msg: "name : {{ instance_nm }}' \n ip : '{{ vm.instances[0].nic[0].ipaddress }}' "
-
 
 - name: 서비스 상태체크 스케줄러 생성
   hosts: genie_vm
