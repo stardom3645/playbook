@@ -294,7 +294,7 @@
 
     - name: "================instance info================"
       debug:
-        msg: "name : {{ instance_nm }} \n ip : {{ vm.instances[0].nic[0].ipaddress }} "
+        msg: "name : '{{ instance_nm }}' \n ip : '{{ vm.instances[0].nic[0].ipaddress }}' "
 
 
 - name: 서비스 상태체크 스케줄러 생성
