@@ -154,7 +154,7 @@
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -s "Active"
-      when: "{{ httpd_state_result.stdout }}" == "active" || "{{ mysqld_state_result.stdout }}" == "active"
+      when: httpd_state_result.stdout == active || mysqld_state_result.stdout == active
 
     - name: update group
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
@@ -164,4 +164,4 @@
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -s "Inactive"
-      when: "{{ httpd_state_result.stdout }}" == "inactive" || "{{ mysqld_state_result.stdout }}" == "inactive"
+      when: httpd_state_result.stdout == inactive || mysqld_state_result.stdout == inactive
