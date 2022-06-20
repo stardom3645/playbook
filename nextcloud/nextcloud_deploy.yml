@@ -3,6 +3,8 @@
   hosts: localhost
   vars:
     instance_nm: 'nextcloud-deploy-vm'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
@@ -14,8 +16,8 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         name: "{{ instance_nm }}"
-        template: CentOS-8-5-2111-cloudinit
-        service_offering: 2C-4GB-RBD
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
         user_data: |
             #cloud-config
