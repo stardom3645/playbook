@@ -144,4 +144,4 @@
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
         -s "Inactive"
-      when: httpd_state_result.stdout !== 'active' or mysqld_state_result.stdout !== 'active'
+      when: httpd_state_result.stdout != 'active' or mysqld_state_result.stdout != 'active'
