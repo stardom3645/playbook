@@ -2,7 +2,7 @@
 - name: Genie를 활용한 Mold VM 배포
   hosts: localhost
   vars:
-    instance_nm: 'nextcloud-deploy-vm2'
+    instance_nm: 'nextcloud-deploy-vm'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
