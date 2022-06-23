@@ -1,6 +1,6 @@
 ---
 - name: Genie를 활용한 Mold VM 배포
-  hosts: localhost
+  hosts: genie_vm
   vars:
     instance_nm: 'nextcloud-deploy-vm111'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
