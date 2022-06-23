@@ -305,25 +305,12 @@
       shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
       register: admin_password
 
-    # - name: Genie job 템플릿 생성
-    #   awx.awx.job_template:
-    #     name: "status_nextcloud"
-    #     job_type: "run"
-    #     inventory: "genie_inventory"
-    #     project: "sj-git"
-    #     playbook: "nextcloud/state_httpd.yml"
-    #     credentials:
-    #       - "Automation Controller Credential"
-    #     state: "present"
-    #     controller_host: "http://{{ genie_ip }}:80"
-    #     controller_username: admin
-    #     controller_password: "{{ admin_password.stdout }}"
-    #   register: template_info
-
     - name: 상태체크 job 실행
-      job_launch:
+      awx.awx.job_launch:
         job_template: "nextcloud_check"
-      register: job
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
 
     - name: Genie job 스케줄러 생성
       awx.awx.schedule:
