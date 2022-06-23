@@ -1,0 +1,73 @@
+---
+- name: Genie를 활용한 Mold VM 배포
+  hosts: localhost
+  vars:
+    instance_nm: 'nextcloud-deploy-vm111'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+
+    - name: 가상머신 생성 "{{ instance_nm }}"
+      cs_instance:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        name: "{{ instance_nm }}"
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+        user_data: |
+            #cloud-config
+            disable_root: false
+            ssh_pwauth: true
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      delegate_to: localhost
+
+    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+      wait_for:
+        timeout: 15
+
+    - name: 배포한 가상머신 정보 수집
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ instance_nm }}"
+      delegate_to: localhost
+      register: vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+        groups:
+          - deployVmIp
+
+    - name: Create Public IP
+      cs_ip_address:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: ac_public_ip
+
+    - name: Public IP 정보 수집
+      debug:
+        msg: "{{ ac_public_ip.ip_address }}"
+
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ instance_nm }}"
+      cs_staticnat:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        vm: "{{ instance_nm }}"
+      delegate_to: localhost
