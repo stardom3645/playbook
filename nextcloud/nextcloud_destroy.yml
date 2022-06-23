@@ -56,6 +56,6 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
         name: "{{ instance_nm }}"
-        state: expunged
+        state: destroyed
       delegate_to: localhost
     
