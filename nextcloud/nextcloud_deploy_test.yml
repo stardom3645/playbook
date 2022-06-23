@@ -2,14 +2,18 @@
 - name: Genie를 활용한 Mold VM 배포
   hosts: genie_vm
   vars:
-    instance_nm: 'nextcloud-deploy-vm111'
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
+    base_path: 'genie'
+    genie_ip: 'localhost'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
+    - name: AWX 초기 관리자 패스워드 추출
+      shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+      register: admin_password
 
     - name: 상태체크 job 실행
       awx.awx.job_launch:
         job_template: "nextcloud_check"
-      register: job
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
