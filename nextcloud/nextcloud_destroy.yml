@@ -34,6 +34,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
         ip_address: "{{ vm.instances[0].public_ip }}"
         state: absent
       delegate_to: localhost
@@ -43,6 +44,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
         ip_address: "{{ vm.instances[0].public_ip }}"
         state: absent
       delegate_to: localhost
@@ -52,6 +54,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
         name: "{{ instance_nm }}"
         state: absent
       delegate_to: localhost
