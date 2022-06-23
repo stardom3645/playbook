@@ -27,4 +27,4 @@
 
     - name: 배포 가상머신 ip 정보 수집
       debug:
-        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+        msg: "{{ vm }}"
