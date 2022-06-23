@@ -320,6 +320,11 @@
     #     controller_password: "{{ admin_password.stdout }}"
     #   register: template_info
 
+    - name: 상태체크 job 실행
+      job_launch:
+        job_template: "nextcloud_check"
+      register: job
+
     - name: Genie job 스케줄러 생성
       awx.awx.schedule:
         name: nextcloud_check
