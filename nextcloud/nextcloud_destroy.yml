@@ -2,7 +2,7 @@
 - name: Genie를 활용한 Mold VM 삭제
   hosts: localhost
   vars:
-    instance_nm: 'nextcloud-deploy-vm'
+    instance_nm: 'nextcloud-deploy-vm111'
     service_group: 'Nextcloud'
   gather_facts: no
   tasks:
@@ -28,3 +28,22 @@
     - name: 배포 가상머신 ip 정보 수집
       debug:
         msg: "{{ vm }}"
+
+    - name: Remove a static NAT
+      cs_staticnat:
+        ip_address: "{{ vm.instances[0].public_ip }}"
+        state: absent
+      delegate_to: localhost
+
+    - name: Disassociate an IP address
+      cs_ip_address:
+        ip_address: "{{ vm.instances[0].public_ip }}"
+        state: absent
+      delegate_to: localhost
+
+    - name: remove an instance
+      cs_instance:
+        name: "{{ instance_nm }}"
+        state: absent
+      delegate_to: localhost
+    
