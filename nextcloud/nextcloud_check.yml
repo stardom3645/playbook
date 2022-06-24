@@ -106,7 +106,7 @@
 
     # 서비스 단위별 상태체크
     - name: ssh
-      ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
+      ansible.builtin.command: ssh -o ConnectTimeout=10 root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
       timeout: 10
       ignore_errors: yes
       register: mysqld_state_result
