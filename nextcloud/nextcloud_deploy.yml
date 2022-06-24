@@ -308,9 +308,9 @@
     - name: 상태체크 job 실행
       awx.awx.job_launch:
         job_template: "nextcloud_check"
-        # controller_host: "http://{{ genie_ip }}:80"
-        # controller_username: admin
-        # controller_password: "{{ admin_password.stdout }}"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
 
     - name: Genie job 스케줄러 생성
       awx.awx.schedule:
