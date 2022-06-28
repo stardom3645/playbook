@@ -13,7 +13,7 @@
 
     - name: Create nextcloud deploy playbook
       awx.awx.job_template:
-        name: nextcloud_test
+        name: nextcloud_deploy
         # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
@@ -28,7 +28,7 @@
 
     - name: Create nextcloud state check playbook
       awx.awx.job_template:
-        name: nextcloud_test
+        name: nextcloud_check
         # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
@@ -43,7 +43,7 @@
 
     - name: Create nextcloud delete playbook
       awx.awx.job_template:
-        name: nextcloud_test
+        name: nextcloud_destroy
         # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
