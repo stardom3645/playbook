@@ -12,8 +12,14 @@
       register: admin_password
 
     - name: 상태체크 job 실행
-      awx.awx.job_launch:
-        job_template: "nextcloud_check"
+      awx.awx.job_template:
+        name: nextcloud_test
+        # copy_from: test job template
+        job_type: "run"
+        inventory: genie_inventory
+        project: playbook_project
+        playbook: nextcloud_deploy.yml
+        state: "present"
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
