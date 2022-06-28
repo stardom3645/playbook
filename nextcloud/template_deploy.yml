@@ -1,0 +1,57 @@
+---
+- name: AWX 템플릿 배포
+  hosts: genie_vm
+  vars:
+    base_path: 'genie'
+    genie_ip: 'localhost'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+    - name: AWX 초기 관리자 패스워드 추출
+      shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+      register: admin_password
+
+    - name: Create nextcloud deploy playbook
+      awx.awx.job_template:
+        name: nextcloud_test
+        # copy_from: test job template
+        job_type: "run"
+        inventory: genie_inventory
+        project: playbook_project
+        playbook: nextcloud/nextcloud_deploy.yml
+        credentials:
+          - "automation_controller_credential"
+        state: "present"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
+
+    - name: Create nextcloud state check playbook
+      awx.awx.job_template:
+        name: nextcloud_test
+        # copy_from: test job template
+        job_type: "run"
+        inventory: genie_inventory
+        project: playbook_project
+        playbook: nextcloud/nextcloud_check.yml
+        credentials:
+          - "automation_controller_credential"
+        state: "present"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
+
+    - name: Create nextcloud delete playbook
+      awx.awx.job_template:
+        name: nextcloud_test
+        # copy_from: test job template
+        job_type: "run"
+        inventory: genie_inventory
+        project: playbook_project
+        playbook: nextcloud/nextcloud_destroy.yml
+        credentials:
+          - "automation_controller_credential"
+        state: "present"
+        controller_host: "http://{{ genie_ip }}:80"
+        controller_username: admin
+        controller_password: "{{ admin_password.stdout }}"
