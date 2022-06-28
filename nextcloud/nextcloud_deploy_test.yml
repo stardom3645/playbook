@@ -18,7 +18,7 @@
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
-        playbook: nextcloud_check.yml
+        playbook: nextcloud/nextcloud_check.yml
         credentials:
           - "automation_controller_credential"
         state: "present"
