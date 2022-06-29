@@ -107,7 +107,7 @@
 
     # 서비스 단위별 상태체크
     - name: ssh
-      ansible.builtin.command: ssh -o ConnectTimeout=10 root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
+      ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
       timeout: 10
       ignore_errors: yes
       register: mysqld_state_result
@@ -129,7 +129,7 @@
         -s "{{ mysqld_state_result.stdout }}"
 
     # 서비스 그룹 상태 업데이트
-    - name: update group
+    - name: update group(active)
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c updateDeployedResourceGroup \
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
@@ -139,7 +139,7 @@
         -s "Active"
       when: httpd_state_result.stdout == 'active' and mysqld_state_result.stdout == 'active'
 
-    - name: update group
+    - name: update group(inactive)
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c updateDeployedResourceGroup \
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
