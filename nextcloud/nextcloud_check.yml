@@ -49,7 +49,7 @@
         -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
         -acid "{{ lookup('env', 'AC_INSTANCE_UUID') }}" \
         -n "{{ service_group }}" \
-        -d "Nextcloud is a client-server software for developing and using file hosting services. The access url is 'http://ip/nextcloud'."
+        -d "Open URL in browser ‘http://localhost/nextcloud'. When you log in for the first time, the administrator account and database settings page appears."
       when: list_jsondata.listautomationdeployedresourceresponse == {}
 
     # 그룹조회
