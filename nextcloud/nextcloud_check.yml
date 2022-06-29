@@ -85,7 +85,7 @@
     # 서비스 단위별 상태체크
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active httpd"
-      timeout: 10
+      # timeout: 10
       ignore_errors: yes
       register: httpd_state_result
       # delegate_to: genie_vm
@@ -108,7 +108,7 @@
     # 서비스 단위별 상태체크
     - name: ssh
       ansible.builtin.command: ssh root@{{ vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
-      timeout: 10
+      # timeout: 10
       ignore_errors: yes
       register: mysqld_state_result
       # delegate_to: genie_vm
