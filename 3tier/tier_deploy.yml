@@ -49,8 +49,7 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ vm.default_ip }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        start_port: 80
-        end_port: 80
+        port: 80
         protocol: tcp
       delegate_to: localhost
 
@@ -61,8 +60,7 @@
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         ip_address: "{{ vm.default_ip }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        start_port: 443
-        end_port: 443
+        port: 443
         protocol: tcp
       delegate_to: localhost
 
