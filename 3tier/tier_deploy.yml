@@ -11,7 +11,7 @@
   tasks:
 ##### Deploy VirtualMachine #####
 
-    - name: 가상머신 생성 "{{ instance_nm }}"
+    - name: 가상머신 생성 "{{ web_instance_nm }}"
       cs_instance:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
@@ -34,4 +34,21 @@
 
     - name: 배포 가상머신 ip 정보 수집
       debug:
-        msg: "{{ vm }}"
+        msg: "{{ vmdefault_ip }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+        groups:
+          - web-deployVmIp
+
+##### Deploy WebServer #####
+- name: "Deploy WebServer"
+  hosts: web-deployVmIp
+  gather_facts: no
+  tasks:
+  # nginx
+  - name: "Install nginx"
+    ansible.builtin.package:
+      name: "nginx"
+      state: present"
