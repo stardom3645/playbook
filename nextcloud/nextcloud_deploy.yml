@@ -72,7 +72,7 @@
         vm: "{{ instance_nm }}"
       delegate_to: localhost
 
-    - name: Allow 88 port for public ip
+    - name: Allow 80 port for public ip
       cs_firewall:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
