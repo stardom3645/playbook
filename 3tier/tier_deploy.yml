@@ -62,6 +62,6 @@
       persistent: yes
 
   # Start nginx
-  - name: Restart httpd service
-      systemd: name=httpd state=restarted
+  - name: Restart nginx service
+      systemd: name=nginx state=restarted
       become: yes
