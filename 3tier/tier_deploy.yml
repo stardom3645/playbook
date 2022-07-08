@@ -47,8 +47,21 @@
   hosts: web-deployVmIp
   gather_facts: no
   tasks:
-  # nginx
+  # Install nginx
   - name: "Install nginx"
     ansible.builtin.package:
       name: "nginx"
       state: "present"
+
+  # Config nginx###########################
+  
+  - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+    ansible.posix.seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+  # Start nginx
+  - name: Restart httpd service
+      systemd: name=httpd state=restarted
+      become: yes
