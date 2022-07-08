@@ -1,0 +1,99 @@
+---
+- name: Genie를 활용한 Mold VM 배포
+  hosts: localhost
+  vars:
+    was_instance_nm: 'tier-was-deploy-vm'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+
+    - name: 가상머신 생성 "{{ was_instance_nm }}"
+      cs_instance:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        name: "{{ was_instance_nm }}"
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+        user_data: |
+            #cloud-config
+            disable_root: false
+            ssh_pwauth: true
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: vm
+
+    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+      wait_for:
+        timeout: 15
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.default_ip }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.default_ip }}"
+        groups:
+          - was-deployVmIp
+
+##### Deploy WasServer #####
+- name: "Deploy WasServer"
+  hosts: was-deployVmIp
+  gather_facts: no
+  tasks:
+  # Install Tomcat
+    - name: Install Java 8 CentOS
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+    
+    - name: Download Tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
+        dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
+
+    # - name: Create a tomcat directory
+    #   file:
+    #     path: /usr/share/tomcat
+    #     state: directory
+
+    - name: Extract tomcat archive
+      unarchive:
+        src: "/tmp/apache-tomcat-9.0.64.tar.gz"
+        dest: /usr/local
+        remote_src: yes
+        extra_opts: "--strip-components=1"
+        creates: /usr/local/bin
+
+    - name: Copy tomcat service file
+      template:
+        src: /home/runner/tomcat.service.j2
+        dest: /etc/systemd/system/tomcat.service
+      when: ansible_service_mgr == "systemd"
+      
+    - name: Start and enable tomcat
+      service:
+        daemon_reload: yes
+        name: tomcat
+        state: started
+        enabled: yes
+      when: ansible_service_mgr == "systemd"
+
+    - name: Start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+      when: ansible_service_mgr == "systemd"
+
+    - name: Open tomcat port on the firewall
+      firewalld:
+        port: 8080/tcp
+        permanent: true
+        state: enabled
+        immediate: yes
+      when: ansible_service_mgr == "systemd"

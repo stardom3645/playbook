@@ -3,8 +3,6 @@
   hosts: localhost
   vars:
     web_instance_nm: 'tier-web-deploy-vm'
-    was_instance_nm: 'tier-was-deploy-vm'
-    db_instance_nm: 'tier-db-deploy-vm'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -42,28 +40,6 @@
         groups:
           - web-deployVmIp
 
-    - name: Allow 80 port
-      cs_firewall:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ vm.default_ip }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        port: 80
-        protocol: tcp
-      delegate_to: localhost
-
-    - name: Allow 443 port
-      cs_firewall:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ vm.default_ip }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        port: 443
-        protocol: tcp
-      delegate_to: localhost
-
 ##### Deploy WebServer #####
 - name: "Deploy WebServer"
   hosts: web-deployVmIp
@@ -87,4 +63,21 @@
   - name: Start nginx
     ansible.builtin.service:
       name: "nginx.service"
+      state: "restarted"
+
+  - name: do permit traffic in default zone on port 80/tcp
+    ansible.posix.firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+
+  - name: do permit traffic in default zone on port 443/tcp
+    ansible.posix.firewalld:
+      port: 443/tcp
+      permanent: yes
+      state: enabled
+
+  - name: firewalld reload
+    ansible.builtin.service:
+      name: "firewalld.service"
       state: "restarted"
