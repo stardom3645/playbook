@@ -49,75 +49,42 @@
     - mysql_root_password: Ablecloud1!
     - mysql_db: cloud
   tasks:
-  # Install Tomcat
-    - name: Install Java 8 CentOS
-      yum:
-        name: java-1.8.0-openjdk
+  # Install MySQL
+    - name: Install MySQL Packages
+      yum: name={{ item }} update_cache=yes state=latest
+      loop: [ 'mysql-server', 'php-mysqlnd', 'python3-PyMySQL' ]
+
+    - name: Start mysqld service
+      systemd: name=mysqld state=started enabled=yes
+
+    - name: Set MySQL root Password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        priv: '*.*:ALL'
         state: present
-    
-    - name: Download Tomcat
-      get_url:
-        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
-        dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
 
-    # - name: Create a tomcat directory
-    #   file:
-    #     path: /usr/share/tomcat
-    #     state: directory
+    - name: Creates database
+      community.mysql.mysql_db:
+        name: "{{ mysql_db }}"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
 
-    - name: Extract tomcat archive
-      ansible.builtin.unarchive:
-        src: "/tmp/apache-tomcat-9.0.64.tar.gz"
-        dest: /usr/local
-        remote_src: yes
-        # extra_opts: "--strip-components=1"
-        # creates: /usr/local/bin
+    - name: Copy database dump file
+      copy:
+        src: /home/runner/db.sql.j2
+        dest: /tmp
 
-    - name: Copy tomcat service file
-      template:
-        src: /home/runner/tomcat.service.j2
-        dest: /etc/systemd/system/tomcat.service
-      
-    - name: Start and enable tomcat
-      ansible.builtin.systemd:
-        daemon_reload: yes
-        name: tomcat
-        state: restarted
-        enabled: yes
-    #------------------------systemctl start tomcat.service 자동완성 오류(기능은됨)
+    - name: Restore database
+      community.mysql.mysql_db:
+        name: "{{ mysql_db }}"
+        state: import
+        target: /tmp/db.sql.j2
 
-    # deploy war###########################
-    - name: Download War
-      get_url:
-        url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
-        dest: "/tmp/ROOT.war"
-
-    - name: Copy file with owner and permissions
-      ansible.builtin.copy:
-        src: /tpm/ROOT.war
-        dest: /usr/local/apache-tomcat-9.0.64/webapps/
-        # mode: '0644'
-
-    - name: Start tomcat
-      ansible.builtin.service:
-        name: "tomcat.service"
-        state: "restarted"
-        
-    - name: Replace between the expressions
-      ansible.builtin.replace:
-        path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-        after: ''
-        #-----------------------dbserver ip 추가필요
-        before: 'dbserver'
-    
-    - name: Start tomcat
-      ansible.builtin.service:
-        name: "tomcat.service"
-        state: "restarted"
-        
-    - name: do permit traffic in default zone on port 8080/tcp
+    - name: do permit traffic in default zone on port 3306/tcp
       ansible.posix.firewalld:
-        port: 8080/tcp
+        port: 3306/tcp
         permanent: yes
         state: enabled
 

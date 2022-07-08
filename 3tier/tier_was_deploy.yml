@@ -118,8 +118,7 @@
     - name: Replace between the expressions
       ansible.builtin.replace:
         path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-        after: ''
-        #-----------------------dbserver ip 추가필요
+        after: '{{ vm.instances[0].nic[0].ipaddress }}'
         before: 'dbserver'
     
     - name: Start tomcat
