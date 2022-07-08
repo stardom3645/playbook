@@ -47,7 +47,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ web-deployVmIp }}"
+        ip_address: "{{ vm.default_ip }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         start_port: 80
         end_port: 80
@@ -59,7 +59,7 @@
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ web-deployVmIp }}"
+        ip_address: "{{ vm.default_ip }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         start_port: 443
         end_port: 443
