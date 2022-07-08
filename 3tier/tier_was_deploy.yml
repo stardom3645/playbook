@@ -75,10 +75,10 @@
         dest: /etc/systemd/system/tomcat.service
       
     - name: Start and enable tomcat
-      service:
+      ansible.builtin.systemd:
         daemon_reload: yes
         name: tomcat
-        state: started
+        state: restarted
         enabled: yes
 
     # deploy war###########################
