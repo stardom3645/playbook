@@ -42,19 +42,19 @@
         groups:
           - web-deployVmIp
 
-    - name: Allow 80 port for public ip
+    - name: Allow 80 port
       cs_firewall:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ ac_public_ip.ip_address }}"
+        ip_address: "{{ web-deployVmIp }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
         start_port: 80
         end_port: 80
         protocol: tcp
       delegate_to: localhost
 
-    - name: Allow 443 port for public ip
+    - name: Allow 443 port
       cs_firewall:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
