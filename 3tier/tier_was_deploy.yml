@@ -94,6 +94,7 @@
       ansible.builtin.copy:
         src: /tpm/ROOT.war
         dest: /usr/local/apache-tomcat-9.0.64/webapps/
+        remote_src: yes
         # mode: '0644'
 
     - name: Start tomcat
