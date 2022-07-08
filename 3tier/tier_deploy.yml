@@ -17,7 +17,7 @@
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: "{{ instance_nm }}"
+        name: "{{ web_instance_nm }}"
         template: "{{ instance_temp }}"
         service_offering: "{{ instance_computeoffer }}"
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
