@@ -92,7 +92,7 @@
 
     - name: Copy file with owner and permissions
       ansible.builtin.copy:
-        src: /tpm/ROOT.war
+        src: /tmp/ROOT.war
         dest: /usr/local/apache-tomcat-9.0.64/webapps/
         remote_src: yes
         # mode: '0644'
