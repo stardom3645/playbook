@@ -63,6 +63,6 @@
 
   # Start nginx
   - name: Start nginx
-      ansible.builtin.service:
-        name: "nginx.service"
-        state: "restarted"
+    ansible.builtin.service:
+      name: "nginx.service"
+      state: "restarted"
