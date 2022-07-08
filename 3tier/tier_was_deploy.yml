@@ -66,14 +66,13 @@
         src: "/tmp/apache-tomcat-9.0.64.tar.gz"
         dest: /usr/local
         remote_src: yes
-        extra_opts: "--strip-components=1"
-        creates: /usr/local/bin
+        # extra_opts: "--strip-components=1"
+        # creates: /usr/local/bin
 
     - name: Copy tomcat service file
       template:
         src: /home/runner/tomcat.service.j2
         dest: /etc/systemd/system/tomcat.service
-      # when: ansible_service_mgr == "systemd"
       
     - name: Start and enable tomcat
       service:
@@ -81,19 +80,19 @@
         name: tomcat
         state: started
         enabled: yes
-      # when: ansible_service_mgr == "systemd"
 
-    - name: Start and enable firewalld
-      service:
-        name: firewalld
-        state: started
-        enabled: yes
-      # when: ansible_service_mgr == "systemd"
+    # deploy war###########################
+    
 
-    - name: Open tomcat port on the firewall
-      firewalld:
+    - name: do permit traffic in default zone on port 8080/tcp
+      ansible.posix.firewalld:
         port: 8080/tcp
-        permanent: true
+        permanent: yes
         state: enabled
-        immediate: yes
-      # when: ansible_service_mgr == "systemd"
+
+    - name: firewalld reload
+      ansible.builtin.service:
+        name: "firewalld.service"
+        state: "restarted"
+
+    
