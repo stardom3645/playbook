@@ -2,20 +2,20 @@
 - name: Genie를 활용한 Mold VM 배포
   hosts: localhost
   vars:
-    was_instance_nm: 'tier-was-deploy-vm'
+    db_instance_nm: 'tier-db-deploy-vm'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
   tasks:
 ##### Deploy VirtualMachine #####
 
-    - name: 가상머신 생성 "{{ was_instance_nm }}"
+    - name: 가상머신 생성 "{{ db_instance_nm }}"
       cs_instance:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
         api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
         zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: "{{ was_instance_nm }}"
+        name: "{{ db_instance_nm }}"
         template: "{{ instance_temp }}"
         service_offering: "{{ instance_computeoffer }}"
         ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -38,14 +38,16 @@
       add_host:
         hostname: "{{ vm.default_ip }}"
         groups:
-          - was-deployVmIp
+          - db-deployVmIp
 
-##### Deploy WasServer #####
-- name: "Deploy WasServer"
-  hosts: was-deployVmIp
+##### Deploy DbServer #####
+- name: "Deploy DbServer"
+  hosts: db-deployVmIp
   gather_facts: no
   vars:
-    db_instance_nm: 'tier-web-deploy-vm'
+    #MySQL Settings
+    - mysql_root_password: Ablecloud1!
+    - mysql_db: cloud
   tasks:
   # Install Tomcat
     - name: Install Java 8 CentOS
@@ -100,20 +102,7 @@
       ansible.builtin.service:
         name: "tomcat.service"
         state: "restarted"
-
-    - name: 배포한 DB가상머신 정보 수집
-      cs_instance_info:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: "{{ db_instance_nm }}"
-      delegate_to: localhost
-      register: vm
-
-    - name: 배포 가상머신 ip 정보 수집
-      debug:
-        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
-
+        
     - name: Replace between the expressions
       ansible.builtin.replace:
         path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
@@ -125,7 +114,7 @@
       ansible.builtin.service:
         name: "tomcat.service"
         state: "restarted"
-
+        
     - name: do permit traffic in default zone on port 8080/tcp
       ansible.posix.firewalld:
         port: 8080/tcp
