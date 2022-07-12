@@ -115,12 +115,17 @@
       debug:
         msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-    - name: Replace between the expressions
-      ansible.builtin.replace:
-        path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-        after: '{{ vm.instances[0].nic[0].ipaddress }}'
-        before: 'dbserver'
-    
+    # - name: Replace between the expressions
+    #   ansible.builtin.replace:
+    #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
+    #     after: '{{ vm.instances[0].nic[0].ipaddress }}'
+    #     before: 'dbserver'
+
+    - name: lineinfile
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ vm.instances[0].nic[0].ipaddress }} db-server"
+
     - name: Start tomcat
       ansible.builtin.service:
         name: "tomcat.service"

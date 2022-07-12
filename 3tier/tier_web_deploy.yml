@@ -75,7 +75,7 @@
   - name: lineinfile
     lineinfile:
       path: /etc/hosts
-      line: "{{ vm.instances[0].nic[0].ipaddress }} db-server"
+      line: "{{ vm.instances[0].nic[0].ipaddress }} was-server"
 
   - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
     ansible.posix.seboolean:
