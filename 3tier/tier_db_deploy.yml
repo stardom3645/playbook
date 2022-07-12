@@ -62,7 +62,7 @@
         name: root
         password: "{{ mysql_root_password }}"
         login_user: root
-        login_password: ""
+        login_password: "Ablecloud1!"
         host: "{{ item }}"
         priv: "*.*:ALL,GRANT"
         state: present
