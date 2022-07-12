@@ -57,15 +57,14 @@
     - name: Start mysqld service
       systemd: name=mysqld state=started enabled=yes
 
-    - name: Set MySQL root Password
-      community.mysql.mysql_user:
-        name: root
-        password: "{{ mysql_root_password }}"
-        # login_host: localhost
-        login_user: root
-        login_password: ""
-        priv: '*.*:ALL'
-        state: present
+    # - name: Set MySQL root Password
+    #   community.mysql.mysql_user:
+    #     name: root
+    #     password: "{{ mysql_root_password }}"
+    #     login_user: root
+    #     login_password: ""
+    #     priv: '*.*:ALL'
+    #     state: present
 
     - name: Creates database
       community.mysql.mysql_db:
@@ -83,7 +82,9 @@
       community.mysql.mysql_db:
         name: "{{ mysql_db }}"
         state: import
-        target: /home/runner/db.sql.j2
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        target: /tmp/db.sql.j2
 
     - name: do permit traffic in default zone on port 3306/tcp
       ansible.posix.firewalld:
