@@ -60,9 +60,9 @@
         name: "{{ item }}"
         state: destroyed
       with_items:
-        - {{ db_instance_nm }}
-        - {{ was_instance_nm }}
-        - {{ web_instance_nm }}
+        - "{{ db_instance_nm }}"
+        - "{{ was_instance_nm }}"
+        - "{{ web_instance_nm }}"
       delegate_to: localhost
 
 
