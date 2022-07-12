@@ -87,10 +87,9 @@
     - name: Delete ROOT Directory
       file:
         path: "/usr/local/apache-tomcat-9.0.64/webapps/ROOT/"
-        state: "{{ item }}"
-      with_items:
-        - absent
-        - directory
+        state: absent
+      with_fileglob:
+        - "/usr/local/apache-tomcat-9.0.64/webapps/ROOT/"
 
     - name: Download War
       get_url:
