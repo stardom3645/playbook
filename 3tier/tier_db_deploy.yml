@@ -63,7 +63,7 @@
         password: "{{ mysql_root_password }}"
         login_user: root
         login_password: ""
-        priv: '*.*:ALL'
+        priv: "{{ mysql_db }}.*:ALL"
         state: present
 
     - name: Creates database

@@ -89,17 +89,17 @@
       name: "nginx.service"
       state: "restarted"
 
-  - name: do permit traffic in default zone on port 80/tcp
+  - name: do permit traffic in default zone on port 8080/tcp
     ansible.posix.firewalld:
-      port: 80/tcp
+      port: 8080/tcp
       permanent: yes
       state: enabled
 
-  - name: do permit traffic in default zone on port 443/tcp
-    ansible.posix.firewalld:
-      port: 443/tcp
-      permanent: yes
-      state: enabled
+  # - name: do permit traffic in default zone on port 443/tcp
+  #   ansible.posix.firewalld:
+  #     port: 443/tcp
+  #     permanent: yes
+  #     state: enabled
 
   - name: firewalld reload
     ansible.builtin.service:
