@@ -68,7 +68,7 @@
         state: present
       with_items:
         - localhost
-        - %
+        - "%"
 
     - name: Creates database
       community.mysql.mysql_db:
