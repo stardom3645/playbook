@@ -29,7 +29,7 @@
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
       wait_for:
         port: 80
-        timeout: 30
+        delay: 30
 
     - name: 배포 가상머신 ip 정보 수집
       debug:
