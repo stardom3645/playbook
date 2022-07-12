@@ -87,7 +87,8 @@
   tasks:
 
     - name: 생성한 가상머신이 부팅이 완료될 때까지 기다림
-      wait_for_connection:
+      wait_for:
+        port: 80
         timeout: 30
 
     - name: Install HTTP Packages
