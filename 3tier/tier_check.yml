@@ -8,7 +8,7 @@
     service_group: '3Tier'
   gather_facts: no
   tasks:
-##### Save State #####
+##### Info VirtualMachine #####
     - name: 배포한 가상머신 정보 수집(DB)
       cs_instance_info:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
@@ -36,6 +36,7 @@
       delegate_to: localhost
       register: web_vm
 
+##### Save State #####
     - name: 그룹 조회
       ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
         -c listAutomationDeployedResource \
@@ -65,7 +66,7 @@
         -acid "{{ lookup('env', 'AC_ID') }}" \
         -n "{{ service_group }}" \
         -d "Open URL in browser ‘http://localhost:8080'. This is the url of the WebServer configured with 3 Tier (WebServer, WasServer, DBServer)." \
-        -ai "http://{{ web_vm.instances[0].publicip }}:8080"
+        -ai "http://{{ web_vm.instances[0].public_ip }}:8080"
       when: list_jsondata.listautomationdeployedresourceresponse == {}
 
     # 그룹조회
