@@ -75,6 +75,16 @@
         state: present
       with_items:
         - localhost
+
+    - name: Set MySQL root Password
+      community.mysql.mysql_user:
+        name: root
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        host: "{{ item }}"
+        priv: "*.*:ALL,GRANT"
+        state: present
+      with_items:
         - "%"
 
     - name: Creates database
