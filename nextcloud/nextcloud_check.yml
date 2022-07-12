@@ -79,7 +79,7 @@
         -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
-        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}"
 
 
     # 서비스 단위별 상태체크
