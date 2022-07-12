@@ -3,6 +3,7 @@
   hosts: localhost
   vars:
     web_instance_nm: 'tier-web-deploy-vm'
+    was_instance_nm: 'tier-was-deploy-vm'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -27,8 +28,8 @@
       register: vm
 
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-      wait_for_connection:
-        timeout: 300
+      wait_for:
+        timeout: 20
 
     - name: 배포 가상머신 ip 정보 수집
       debug:
@@ -52,6 +53,28 @@
       state: "present"
 
   # Config nginx###########################
+  - name: Copy wasserver conf file
+      template:
+        src: /home/runner/wasserver.conf.j2
+        dest: /etc/nginx/conf.d/wasserver.conf
+  
+  - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ was_instance_nm }}"
+      delegate_to: localhost
+      register: vm
+
+    - name: 배포 가상머신 ip 정보 수집("{{ was_instance_nm }}")
+      debug:
+        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+  - name: lineinfile
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ vm.instances[0].nic[0].ipaddress }}" db-server
   
   - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
     ansible.posix.seboolean:
