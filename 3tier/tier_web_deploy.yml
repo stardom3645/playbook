@@ -40,6 +40,53 @@
         groups:
           - web-deployVmIp
 
+    - name: Create Public IP
+      cs_ip_address:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: ac_public_ip
+
+    - name: Public IP 정보 수집
+      debug:
+        msg: "{{ ac_public_ip.ip_address }}"
+
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ web_instance_nm }}"
+      cs_staticnat:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        vm: "{{ web_instance_nm }}"
+      delegate_to: localhost
+
+    - name: Allow 80 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 8080
+        end_port: 8080
+        protocol: tcp
+      delegate_to: localhost
+
+    - name: Allow 22 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 22
+        end_port: 22
+        protocol: tcp
+      delegate_to: localhost
+
 ##### Deploy WebServer #####
 - name: "Deploy WebServer"
   hosts: web-deployVmIp
