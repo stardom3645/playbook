@@ -1,0 +1,207 @@
+---
+- name: State Httpd
+  hosts: localhost
+  vars:
+    db_instance_nm: 'tier-db-deploy-vm'
+    was_instance_nm: 'tier-was-deploy-vm'
+    web_instance_nm: 'tier-web-deploy-vm'
+    service_group: '3Tier'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+    - name: 배포한 가상머신 정보 수집(DB)
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ db_instance_nm }}"
+      delegate_to: localhost
+      register: db_vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ db_vm.instances[0].nic[0].ipaddress }}"
+
+##### Save State Httpd #####
+    - name: 그룹 조회
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c listAutomationDeployedResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -n "{{ service_group }}"
+      register: list
+      
+    - name: debug list stdout
+      set_fact:
+        list_jsondata: "{{ list.stdout | from_json }}"
+    - debug:
+        var: list_jsondata
+    - name: group list count
+      debug:
+        msg: "{{ list_jsondata }}"
+
+    # 그룹등록
+    - name: register resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedResourceGroup \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
+        -acid "{{ lookup('env', 'AC_ID') }}" \
+        -n "{{ service_group }}" \
+        -d "Open URL in browser ‘http://localhost:8080'. This is the url of the WebServer configured with 3 Tier (WebServer, WasServer, DBServer)."
+      when: list_jsondata.listautomationdeployedresourceresponse == {}
+
+    # 그룹조회
+    - name: 그룹 조회
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c listAutomationDeployedResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -n "{{ service_group }}"
+      register: list2
+      
+    - name: debug list2 stdout
+      set_fact:
+        list2_jsondata: "{{ list2.stdout | from_json }}"
+    - debug:
+        var: list2_jsondata
+    - name: group list2 count
+      debug:
+        msg: "{{ list2_jsondata }}"
+
+
+    # 서비스 단위별 상태 삭제
+    - name: delete unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c deleteDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+
+
+    # 서비스 단위별 상태체크
+    - name: ssh
+      ansible.builtin.command: ssh root@{{ db_vm.instances[0].nic[0].ipaddress }} "systemctl is-active mysqld"
+      # timeout: 10
+      ignore_errors: yes
+      register: mysqld_state_result
+      # delegate_to: genie_vm
+    - name: ssh result
+      debug:
+        msg: "{{ mysqld_state_result.stdout }}"
+
+    # 서비스 단위별 상태 등록(mysqld)
+    - name: register unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -vid "{{ db_vm.instances[0].id }}" \
+        -un mysqld \
+        -s "{{ mysqld_state_result.stdout }}"
+
+
+    #=============
+    - name: 배포한 가상머신 정보 수집(WAS)
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ was_instance_nm }}"
+      delegate_to: localhost
+      register: was_vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ was_vm.instances[0].nic[0].ipaddress }}"
+
+    # 서비스 단위별 상태체크
+    - name: ssh
+      ansible.builtin.command: ssh root@{{ was_vm.instances[0].nic[0].ipaddress }} "systemctl is-active tomcat"
+      # timeout: 10
+      ignore_errors: yes
+      register: tomcat_state_result
+      # delegate_to: genie_vm
+    - name: ssh result
+      debug:
+        msg: "{{ tomcat_state_result.stdout }}"
+
+    # 서비스 단위별 상태 등록(tomcat)
+    - name: register unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -vid "{{ was_vm.instances[0].id }}" \
+        -un tomcat \
+        -s "{{ tomcat_state_result.stdout }}"
+
+
+    #=============
+    - name: 배포한 가상머신 정보 수집(WEB)
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ web_instance_nm }}"
+      delegate_to: localhost
+      register: web_vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ web_vm.instances[0].nic[0].ipaddress }}"
+
+    # 서비스 단위별 상태체크
+    - name: ssh
+      ansible.builtin.command: ssh root@{{ web_vm.instances[0].nic[0].ipaddress }} "systemctl is-active nginx"
+      # timeout: 10
+      ignore_errors: yes
+      register: nginx_state_result
+      # delegate_to: genie_vm
+    - name: ssh result
+      debug:
+        msg: "{{ nginx_state_result.stdout }}"
+
+    # 서비스 단위별 상태 등록(nginx)
+    - name: register unit resource
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c addDeployedUnitResource \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -vid "{{ web_vm.instances[0].id }}" \
+        -un nginx \
+        -s "{{ nginx_state_result.stdout }}"
+
+
+    #=============
+    # 서비스 그룹 상태 업데이트
+    - name: update group(active)
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c updateDeployedResourceGroup \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -s "Active"
+      when: mysqld_state_result.stdout == 'active' and tomcat_state_result.stdout == 'active' and nginx_state_result.stdout == 'active'
+
+    - name: update group(inactive)
+      ansible.builtin.command: python2 /home/runner/mold_genie_api.py \
+        -c updateDeployedResourceGroup \
+        -ap http -ip "{{ lookup('env', 'MOLD_DEFAULT_URL') }}" -p "{{ lookup('env', 'MOLD_DEFAULT_PORT') }}" \
+        -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
+        -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
+        -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
+        -s "Inactive"
+      when: mysqld_state_result.stdout != 'active' or tomcat_state_result.stdout != 'active' or nginx_state_result.stdout != 'active'
