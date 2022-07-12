@@ -185,6 +185,11 @@
         -s "{{ nginx_state_result.stdout }}"
 
 
+    - name: test
+      debug:
+        msg: "{{ web_vm.instances[0].publicip }}"
+
+
     #=============
     # 서비스 그룹 상태 업데이트
     - name: update group(active)
@@ -194,7 +199,7 @@
         -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
         -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
         -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
-        -ai "http://'{{ web_vm.instances[0].publicip }}':8080" \
+        -ai "http://{{ web_vm.instances[0].publicip }}:8080" \
         -s "Active"
       when: mysqld_state_result.stdout == 'active' and tomcat_state_result.stdout == 'active' and nginx_state_result.stdout == 'active'
 
