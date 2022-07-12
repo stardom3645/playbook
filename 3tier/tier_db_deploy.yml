@@ -27,8 +27,8 @@
       register: vm
 
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-      ansible.builtin.wait_for:
-        timeout: 20
+      wait_for_connection:
+        timeout: 300
 
     - name: 배포 가상머신 ip 정보 수집
       debug:
