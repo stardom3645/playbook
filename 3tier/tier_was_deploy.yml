@@ -84,7 +84,8 @@
         enabled: yes
 
     # deploy war
-  #   - name: Delete ROOT Directory
+    - name: Delete ROOT Directory
+      command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
   #     ansible.builtin.file:
   #       path: "/usr/local/apache-tomcat-9.0.64/webapps/ROOT"
   #       state: absent
