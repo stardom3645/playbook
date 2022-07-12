@@ -54,18 +54,18 @@
 
   # Config nginx
   - name: Copy wasserver conf file
-      template:
-        src: /home/runner/wasserver.conf.j2
-        dest: /etc/nginx/conf.d/wasserver.conf
+    template:
+      src: /home/runner/wasserver.conf.j2
+      dest: /etc/nginx/conf.d/wasserver.conf
   
   - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
-      cs_instance_info:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: "{{ was_instance_nm }}"
-      delegate_to: localhost
-      register: vm
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ was_instance_nm }}"
+    delegate_to: localhost
+    register: vm
 
   - name: 배포 가상머신 ip 정보 수집("{{ was_instance_nm }}")
     debug:
