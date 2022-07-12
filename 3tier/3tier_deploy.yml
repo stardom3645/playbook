@@ -1,0 +1,455 @@
+---
+- name: Genie를 활용한 Mold VM 배포(DB)
+  hosts: localhost
+  vars:
+    db_instance_nm: 'tier-db-deploy-vm'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+
+    - name: 가상머신 생성 "{{ db_instance_nm }}"
+      cs_instance:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        name: "{{ db_instance_nm }}"
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+        user_data: |
+            #cloud-config
+            disable_root: false
+            ssh_pwauth: true
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: vm
+
+    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+      wait_for:
+        timeout: 20
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.default_ip }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.default_ip }}"
+        groups:
+          - db-deployVmIp
+
+##### Deploy DBServer #####
+- name: "Deploy DBServer"
+  hosts: db-deployVmIp
+  gather_facts: no
+  vars:
+    #MySQL Settings
+    - mysql_root_password: Ablecloud1!
+    - mysql_db: cloud
+  tasks:
+  # Install MySQL
+    - name: Install MySQL Packages
+      yum: name={{ item }} update_cache=yes state=latest
+      loop: [ 'mysql-server', 'php-mysqlnd', 'python3-PyMySQL' ]
+
+    - name: Start mysqld service
+      systemd: name=mysqld state=started enabled=yes
+        
+    - name: Set MySQL root Password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_user: root
+        login_password: ""
+        state: present
+
+    - name: Set MySQL root Password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        host: "{{ item }}"
+        priv: "*.*:ALL,GRANT"
+        state: present
+      with_items:
+        - localhost
+        - "%"
+
+    # - name: Set MySQL root Password
+    #   community.mysql.mysql_user:
+    #     name: root
+    #     login_user: root
+    #     login_password: "{{ mysql_root_password }}"
+    #     host: "{{ item }}"
+    #     priv: "*.*:ALL,GRANT"
+    #     state: present
+    #   with_items:
+    #     - "%"
+
+    - name: Creates database
+      community.mysql.mysql_db:
+        name: "{{ mysql_db }}"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: Download sql file
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/db.sql"
+        dest: "/tmp/"
+
+    - name: Restore database
+      community.mysql.mysql_db:
+        name: "{{ mysql_db }}"
+        state: import
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        target: /tmp/db.sql
+
+    - name: do permit traffic in default zone on port 3306/tcp
+      ansible.posix.firewalld:
+        port: 3306/tcp
+        permanent: yes
+        state: enabled
+
+    - name: firewalld reload
+      ansible.builtin.service:
+        name: "firewalld.service"
+        state: "restarted"
+
+    
+#=============================================================
+#=============================================================
+#=============================================================
+
+---
+- name: Genie를 활용한 Mold VM 배포(WAS)
+  hosts: localhost
+  vars:
+    was_instance_nm: 'tier-was-deploy-vm'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+
+    - name: 가상머신 생성 "{{ was_instance_nm }}"
+      cs_instance:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        name: "{{ was_instance_nm }}"
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+        user_data: |
+            #cloud-config
+            disable_root: false
+            ssh_pwauth: true
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: vm
+
+    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+      wait_for:
+        timeout: 20
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.default_ip }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.default_ip }}"
+        groups:
+          - was-deployVmIp
+
+##### Deploy WasServer #####
+- name: "Deploy WasServer"
+  hosts: was-deployVmIp
+  gather_facts: no
+  vars:
+    db_instance_nm: 'tier-db-deploy-vm'
+  tasks:
+  # Install Tomcat
+    - name: Install Java 8 CentOS
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+    
+    - name: Download Tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
+        dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
+
+    # - name: Create a tomcat directory
+    #   file:
+    #     path: /usr/share/tomcat
+    #     state: directory
+
+    - name: Extract tomcat archive
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-9.0.64.tar.gz"
+        dest: /usr/local
+        remote_src: yes
+        # extra_opts: "--strip-components=1"
+        # creates: /usr/local/bin
+
+    - name: Download tomcat service file
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
+        dest: "/etc/systemd/system/"
+      
+    - name: Start and enable tomcat
+      ansible.builtin.systemd:
+        daemon_reload: yes
+        name: tomcat
+        state: restarted
+        enabled: yes
+
+    # deploy war
+    - name: Delete ROOT Directory
+      command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
+  #     ansible.builtin.file:
+  #       path: "/usr/local/apache-tomcat-9.0.64/webapps/ROOT"
+  #       state: absent
+
+    - name: Download War
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
+        dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
+
+    # - name: Copy file with owner and permissions
+    #   ansible.builtin.copy:
+    #     src: /tmp/ROOT.war
+    #     dest: /usr/local/apache-tomcat-9.0.64/webapps/
+    #     remote_src: yes
+        # mode: '0644'
+
+    - name: Start tomcat
+      ansible.builtin.service:
+        name: "tomcat.service"
+        state: "restarted"
+
+    - name: 배포한 DB가상머신 정보 수집
+      cs_instance_info:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        name: "{{ db_instance_nm }}"
+      delegate_to: localhost
+      register: vm
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+    # - name: Replace between the expressions
+    #   ansible.builtin.replace:
+    #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
+    #     after: '{{ vm.instances[0].nic[0].ipaddress }}'
+    #     before: 'dbserver'
+
+    - name: lineinfile
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ vm.instances[0].nic[0].ipaddress }} db-server"
+
+    - name: Start tomcat
+      ansible.builtin.service:
+        name: "tomcat.service"
+        state: "restarted"
+
+    - name: do permit traffic in default zone on port 8080/tcp
+      ansible.posix.firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+
+    - name: firewalld reload
+      ansible.builtin.service:
+        name: "firewalld.service"
+        state: "restarted"
+
+#=============================================================
+#=============================================================
+#=============================================================
+
+---
+- name: Genie를 활용한 Mold VM 배포(WEB)
+  hosts: localhost
+  vars:
+    web_instance_nm: 'tier-web-deploy-vm'
+    instance_temp: 'CentOS-8-5-2111-cloudinit'
+    instance_computeoffer: '2C-4GB-RBD'
+  gather_facts: no
+  tasks:
+##### Deploy VirtualMachine #####
+
+    - name: 가상머신 생성 "{{ web_instance_nm }}"
+      cs_instance:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        name: "{{ web_instance_nm }}"
+        template: "{{ instance_temp }}"
+        service_offering: "{{ instance_computeoffer }}"
+        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+        user_data: |
+            #cloud-config
+            disable_root: false
+            ssh_pwauth: true
+        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: vm
+
+    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+      wait_for:
+        timeout: 20
+
+    - name: 배포 가상머신 ip 정보 수집
+      debug:
+        msg: "{{ vm.default_ip }}"
+
+    - name: 배포 가상머신 인메모리 inventory에 등록
+      add_host:
+        hostname: "{{ vm.default_ip }}"
+        groups:
+          - web-deployVmIp
+
+    - name: Create Public IP
+      cs_ip_address:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      register: ac_public_ip
+
+    - name: Public IP 정보 수집
+      debug:
+        msg: "{{ ac_public_ip.ip_address }}"
+
+    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ web_instance_nm }}"
+      cs_staticnat:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        vm: "{{ web_instance_nm }}"
+      delegate_to: localhost
+
+    - name: Allow 8080 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 8080
+        end_port: 8080
+        protocol: tcp
+      delegate_to: localhost
+
+    - name: Allow 22 port for public ip
+      cs_firewall:
+        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+        ip_address: "{{ ac_public_ip.ip_address }}"
+        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+        start_port: 22
+        end_port: 22
+        protocol: tcp
+      delegate_to: localhost
+
+##### Deploy WebServer #####
+- name: "Deploy WebServer"
+  hosts: web-deployVmIp
+  vars:
+    was_instance_nm: 'tier-was-deploy-vm'
+  gather_facts: no
+  tasks:
+  # Install nginx
+  - name: "Install nginx"
+    ansible.builtin.package:
+      name: "nginx"
+      state: "present"
+
+  # Config nginx
+  - name: Download nginx-was conf file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/nginx-was.conf"
+      dest: "/etc/nginx/conf.d/"
+  
+  - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ was_instance_nm }}"
+    delegate_to: localhost
+    register: vm
+
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+  - name: lineinfile
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ vm.instances[0].nic[0].ipaddress }} was-server"
+
+  - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+    ansible.posix.seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+  # Start nginx
+  - name: Start nginx
+    ansible.builtin.service:
+      name: "nginx.service"
+      state: "restarted"
+
+  # css, images file download
+  - name: Download css file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/css.zip"
+      dest: "/tmp/css.zip"
+  - name: Extract css archive
+    ansible.builtin.unarchive:
+      src: "/tmp/css.zip"
+      dest: /usr/share/nginx/html/
+      remote_src: yes
+
+  - name: Download images file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/images.zip"
+      dest: "/tmp/images.zip"
+  - name: Extract images archive
+    ansible.builtin.unarchive:
+      src: "/tmp/images.zip"
+      dest: /usr/share/nginx/html/
+      remote_src: yes
+
+  - name: do permit traffic in default zone on port 8080/tcp
+    ansible.posix.firewalld:
+      port: 8080/tcp
+      permanent: yes
+      state: enabled
+
+  # - name: do permit traffic in default zone on port 443/tcp
+  #   ansible.posix.firewalld:
+  #     port: 443/tcp
+  #     permanent: yes
+  #     state: enabled
+
+  - name: firewalld reload
+    ansible.builtin.service:
+      name: "firewalld.service"
+      state: "restarted"
