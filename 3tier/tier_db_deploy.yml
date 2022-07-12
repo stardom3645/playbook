@@ -40,8 +40,8 @@
         groups:
           - db-deployVmIp
 
-##### Deploy DbServer #####
-- name: "Deploy DbServer"
+##### Deploy DBServer #####
+- name: "Deploy DBServer"
   hosts: db-deployVmIp
   gather_facts: no
   vars:
@@ -61,6 +61,9 @@
       community.mysql.mysql_user:
         name: root
         password: "{{ mysql_root_password }}"
+        # login_host: localhost
+        login_user: root
+        login_password: ""
         priv: '*.*:ALL'
         state: present
 
