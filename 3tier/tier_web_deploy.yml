@@ -3,7 +3,6 @@
   hosts: localhost
   vars:
     web_instance_nm: 'tier-web-deploy-vm'
-    was_instance_nm: 'tier-was-deploy-vm'
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -44,6 +43,8 @@
 ##### Deploy WebServer #####
 - name: "Deploy WebServer"
   hosts: web-deployVmIp
+  vars:
+    was_instance_nm: 'tier-was-deploy-vm'
   gather_facts: no
   tasks:
   # Install nginx
@@ -58,7 +59,7 @@
       src: /home/runner/wasserver.conf.j2
       dest: /etc/nginx/conf.d/wasserver.conf
   
-  - name: 배포한 가상머신 정보 수집
+  - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
     cs_instance_info:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
