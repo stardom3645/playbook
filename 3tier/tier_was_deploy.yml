@@ -90,16 +90,16 @@
         path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/
         state: absent
 
-    # - name: Download War
-    #   get_url:
-    #     url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
-    #     dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
+    - name: Download War
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
+        dest: "/tmp/"
 
-    # - name: Copy file with owner and permissions
-    #   ansible.builtin.copy:
-    #     src: /tmp/ROOT.war
-    #     dest: /usr/local/apache-tomcat-9.0.64/webapps/
-    #     remote_src: yes
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: /tmp/ROOT.war
+        dest: /usr/local/apache-tomcat-9.0.64/webapps/
+        remote_src: yes
         # mode: '0644'
 
     - name: Start tomcat
