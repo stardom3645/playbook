@@ -85,6 +85,11 @@
     #------------------------systemctl start tomcat.service 자동완성 오류(기능은됨)
 
     # deploy war###########################
+    - name: Delete ROOT Directory
+      get_url:
+        path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT
+        state: absent
+
     - name: Download War
       get_url:
         url: "https://images.ablecloud.io/genie/3tier/ROOT.war"

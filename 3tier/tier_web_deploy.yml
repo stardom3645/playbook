@@ -89,6 +89,29 @@
       name: "nginx.service"
       state: "restarted"
 
+  # css, images file download
+  - name: Download css file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/css"
+      dest: "/tmp/"
+
+  - name: Copy file with owner and permissions
+    ansible.builtin.copy:
+      src: /tmp/css
+      dest: /usr/share/nginx/html/
+      remote_src: yes
+      
+  - name: Download images file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/images"
+      dest: "/tmp/"
+
+  - name: Copy file with owner and permissions
+    ansible.builtin.copy:
+      src: /tmp/images
+      dest: /usr/share/nginx/html/
+      remote_src: yes
+
   - name: do permit traffic in default zone on port 8080/tcp
     ansible.posix.firewalld:
       port: 8080/tcp
