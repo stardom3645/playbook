@@ -28,6 +28,7 @@
 
     - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
       wait_for:
+        port: 80
         timeout: 15
 
     - name: 배포 가상머신 ip 정보 수집
@@ -45,7 +46,7 @@
   hosts: was-deployVmIp
   gather_facts: no
   vars:
-    db_instance_nm: 'tier-web-deploy-vm'
+    db_instance_nm: 'tier-db-deploy-vm'
   tasks:
   # Install Tomcat
     - name: Install Java 8 CentOS
