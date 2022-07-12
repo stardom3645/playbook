@@ -58,7 +58,7 @@
       src: /home/runner/wasserver.conf.j2
       dest: /etc/nginx/conf.d/wasserver.conf
   
-  - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
+  - name: 배포한 가상머신 정보 수집
     cs_instance_info:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
@@ -67,7 +67,7 @@
     delegate_to: localhost
     register: vm
 
-  - name: 배포 가상머신 ip 정보 수집("{{ was_instance_nm }}")
+  - name: 배포 가상머신 ip 정보 수집
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
@@ -75,7 +75,7 @@
     lineinfile:
       path: /etc/hosts
       line: "{{ vm.instances[0].nic[0].ipaddress }} db-server"
-        
+
   - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
     ansible.posix.seboolean:
       name: httpd_can_network_connect
