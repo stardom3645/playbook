@@ -92,27 +92,23 @@
   # css, images file download
   - name: Download css file
     get_url:
-      url: "https://images.ablecloud.io/genie/3tier/css"
-      dest: "/tmp/"
-
-  - name: Copy file with owner and permissions
-    ansible.builtin.copy:
-      src: /tmp/css
+      url: "https://images.ablecloud.io/genie/3tier/css.zip"
+      dest: "/tmp/css.zip"
+  - name: Extract css archive
+    ansible.builtin.unarchive:
+      src: "/tmp/css.zip"
       dest: /usr/share/nginx/html/
       remote_src: yes
-      directory_mode: yes
-      
+
   - name: Download images file
     get_url:
-      url: "https://images.ablecloud.io/genie/3tier/images"
-      dest: "/tmp/"
-
-  - name: Copy file with owner and permissions
-    ansible.builtin.copy:
-      src: /tmp/images
+      url: "https://images.ablecloud.io/genie/3tier/images.zip"
+      dest: "/tmp/images.zip"
+  - name: Extract images archive
+    ansible.builtin.unarchive:
+      src: "/tmp/images.zip"
       dest: /usr/share/nginx/html/
       remote_src: yes
-      directory_mode: yes
 
   - name: do permit traffic in default zone on port 8080/tcp
     ansible.posix.firewalld:
