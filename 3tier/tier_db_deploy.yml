@@ -57,13 +57,13 @@
     - name: Start mysqld service
       systemd: name=mysqld state=started enabled=yes
         
-    # - name: Set MySQL root Password
-    #   community.mysql.mysql_user:
-    #     name: root
-    #     password: "{{ mysql_root_password }}"
-    #     login_user: root
-    #     login_password: ""
-    #     state: present
+    - name: Set MySQL root Password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_user: root
+        login_password: ""
+        state: present
 
     - name: Set MySQL root Password
       community.mysql.mysql_user:
