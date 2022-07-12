@@ -56,10 +56,6 @@
 
     - name: Start mysqld service
       systemd: name=mysqld state=started enabled=yes
-
-    - name: set timezone to Asia/Seoul
-      timezone:
-        name: Asia/Seoul
         
     - name: Set MySQL root Password
       community.mysql.mysql_user:
