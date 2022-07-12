@@ -54,10 +54,10 @@
       state: "present"
 
   # Config nginx
-  - name: Copy wasserver conf file
-    template:
-      src: /home/runner/wasserver.conf.j2
-      dest: /etc/nginx/conf.d/wasserver.conf
+  - name: Download nginx-was conf file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/nginx-was.conf"
+      dest: "/etc/nginx/conf.d/"
   
   - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
     cs_instance_info:

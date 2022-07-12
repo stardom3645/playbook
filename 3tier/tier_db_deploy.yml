@@ -88,10 +88,10 @@
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
-    - name: Copy database dump file
-      copy:
-        src: /home/runner/db.sql.j2
-        dest: /tmp
+    - name: Download sql file
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/db.sql"
+        dest: "/tmp/"
 
     - name: Restore database
       community.mysql.mysql_db:
@@ -99,7 +99,7 @@
         state: import
         login_user: root
         login_password: "{{ mysql_root_password }}"
-        target: /tmp/db.sql.j2
+        target: /tmp/db.sql
 
     - name: do permit traffic in default zone on port 3306/tcp
       ansible.posix.firewalld:

@@ -71,10 +71,10 @@
         # extra_opts: "--strip-components=1"
         # creates: /usr/local/bin
 
-    - name: Copy tomcat service file
-      template:
-        src: /home/runner/tomcat.service.j2
-        dest: /etc/systemd/system/tomcat.service
+    - name: Download tomcat service file
+      get_url:
+        url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
+        dest: "/etc/systemd/system/"
       
     - name: Start and enable tomcat
       ansible.builtin.systemd:
