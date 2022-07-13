@@ -16,12 +16,13 @@
       name: "{{ instance_nm }}"
       template: "{{ instance_temp }}"
       service_offering: "{{ instance_computeoffer }}"
+      ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
       user_data: |
         #cloud-config
         disable_root: false
         ssh_pwauth: true
       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-      register: vm
+    register: vm
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
