@@ -1,5 +1,5 @@
 ---
-- name: State Httpd
+- name: State Check
   hosts: localhost
   vars:
     instance_nm: "nextcloud-deploy-vm"

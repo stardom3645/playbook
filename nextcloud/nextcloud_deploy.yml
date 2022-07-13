@@ -65,7 +65,7 @@
     debug:
       msg: "{{ ac_public_ip.ip_address }}"
 
-  - name: Create a static NAT for "ac_public_ip.ip_address" to "{{ instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"

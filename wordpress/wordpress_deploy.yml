@@ -1,11 +1,9 @@
 ---
 ### Deploy VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포
-  hosts: mold_10.10.3.10
+  hosts: localhost
   vars:
     instance_nm: "wp-deploy-vm"
-    instance_temp: "CentOS-8-cloudinit"
-    instance_computeoffer: "2C-4GB-RBD"
   vars_files: 
     - /home/runner/.ansible_vars_files.yml
   gather_facts: no
@@ -44,7 +42,7 @@
       debug:
         msg: "{{ ac_public_ip.ip_address }}"
         
-    - name: Create a static NAT for IP 10.10.3.112 to "{{ instance_nm }}"
+    - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
       cs_staticnat:
         api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
         api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"

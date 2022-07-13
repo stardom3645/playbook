@@ -1,5 +1,5 @@
 ---
-- name: State Httpd
+- name: State Check
   hosts: localhost
   vars:
     db_instance_nm: "tier-db-deploy-vm"
