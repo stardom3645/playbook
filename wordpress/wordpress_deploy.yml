@@ -4,8 +4,6 @@
   hosts: localhost
   vars:
     instance_nm: "wp-deploy-vm"
-  vars_files: 
-    - /home/runner/.ansible_vars_files.yml
   gather_facts: no
   tasks:
 
