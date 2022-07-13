@@ -4,8 +4,6 @@
   hosts: localhost
   vars:
     db_instance_nm: "tier-db-deploy-vm"
-    instance_temp: "CentOS-8-5-2111-cloudinit"
-    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 
@@ -117,8 +115,6 @@
   hosts: localhost
   vars:
     was_instance_nm: "tier-was-deploy-vm"
-    instance_temp: "CentOS-8-5-2111-cloudinit"
-    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 
@@ -256,8 +252,6 @@
   hosts: localhost
   vars:
     web_instance_nm: "tier-web-deploy-vm"
-    instance_temp: "CentOS-8-5-2111-cloudinit"
-    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 

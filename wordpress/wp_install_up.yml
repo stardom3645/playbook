@@ -4,7 +4,7 @@
   hosts: mold_10.10.3.10
   vars:
     instance_nm: "wp-deploy-vm"
-    instance_temp: "CentOS-8-5-2111-cloudinit"
+    instance_temp: "CentOS-8-cloudinit"
     instance_computeoffer: "2C-4GB-RBD"
   vars_files: 
     - /home/runner/.ansible_vars_files.yml

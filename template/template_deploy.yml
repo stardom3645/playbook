@@ -25,6 +25,9 @@
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
+        extra_vars: 
+          instance_temp: "CentOS-8-cloudinit"
+          instance_computeoffer: "2C-4GB-RBD"
 
     - name: Create nextcloud state check playbook
       awx.awx.job_template:
@@ -68,6 +71,9 @@
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
+        extra_vars: 
+          instance_temp: "CentOS-8-cloudinit"
+          instance_computeoffer: "2C-4GB-RBD"
 
     - name: Create 3tier state check playbook
       awx.awx.job_template:
