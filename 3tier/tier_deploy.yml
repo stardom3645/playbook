@@ -310,8 +310,8 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       vm: "{{ web_instance_nm }}"
     delegate_to: localhost
 
@@ -320,8 +320,8 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       start_port: 8080
       end_port: 8080
       protocol: tcp
@@ -332,8 +332,8 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       start_port: 22
       end_port: 22
       protocol: tcp
@@ -435,6 +435,7 @@
     genie_ip: "localhost"
   gather_facts: no
   tasks:
+
     - name: AWX 초기 관리자 패스워드 추출
       shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
       register: admin_password
