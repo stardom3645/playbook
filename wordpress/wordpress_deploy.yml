@@ -3,7 +3,7 @@
 - name: Genie를 활용한 Mold VM 배포
   hosts: localhost
   vars:
-    instance_nm: "wp-deploy-vm"
+    instance_nm: "wordpress-deploy-vm"
   gather_facts: no
   tasks:
 

@@ -2,7 +2,7 @@
 - name: State Check
   hosts: localhost
   vars:
-    instance_nm: "wp-deploy-vm"
+    instance_nm: "wordpress-deploy-vm"
     service_group: "Wordpress"
   gather_facts: no
   tasks:
