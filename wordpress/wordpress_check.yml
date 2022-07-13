@@ -50,8 +50,8 @@
       -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
       -acid "{{ lookup('env', 'AC_ID') }}" \
       -n "{{ service_group }}" \
-      -d "When you log in for the first time, the administrator account and database settings page appears." \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud"
+      -d "Wordpress is an online open source website authoring tool written in PHP." \
+      -ai "http://{{ vm.instances[0].public_ip }}"
     when: list_jsondata.listautomationdeployedresourceresponse == {}
 
   # 그룹조회
@@ -131,7 +131,7 @@
       -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
       -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
       -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud" \
+      -ai "http://{{ vm.instances[0].public_ip }}" \
       -s "Active"
     when: httpd_state_result.stdout == "active" and mysqld_state_result.stdout == "active"
 
@@ -142,6 +142,6 @@
       -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
       -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
       -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud" \
+      -ai "http://{{ vm.instances[0].public_ip }}" \
       -s "Inactive"
     when: httpd_state_result.stdout != "active" or mysqld_state_result.stdout != "active"
