@@ -27,7 +27,7 @@
 
   - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
     wait_for:
-      timeout: 20
+      timeout: 30
 
   # - name: 배포한 가상머신 정보 수집
   #   cs_instance_info:
