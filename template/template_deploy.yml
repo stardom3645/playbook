@@ -43,19 +43,19 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
 
-  # - name: Create wordpress delete playbook
-  #   awx.awx.job_template:
-  #     name: wordpress_destroy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: wordpress/wordpress_destroy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create wordpress delete playbook
+    awx.awx.job_template:
+      name: wordpress_destroy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: wordpress/wordpress_destroy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
       
   # Nextcloud
   - name: Create nextcloud deploy playbook
