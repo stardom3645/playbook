@@ -28,55 +28,55 @@
     debug:
       msg: "{{ vm.default_ip }}"
 
-  # - name: Create Public IP
-  #   cs_ip_address:
-  #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-  #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-  #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-  #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-  #     network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-  #   register: ac_public_ip
+  - name: Create Public IP
+    cs_ip_address:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: ac_public_ip
 
-  # - name: Public IP 정보 수집
-  #   debug:
-  #     msg: "{{ ac_public_ip.ip_address }}"
+  - name: Public IP 정보 수집
+    debug:
+      msg: "{{ ac_public_ip.ip_address }}"
       
-  # - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
-  #   cs_staticnat:
-  #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-  #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-  #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-  #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-  #     ip_address: "{{ ac_public_ip.ip_address }}"
-  #     vm: "{{ instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
+    cs_staticnat:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      vm: "{{ instance_nm }}"
 
-  # - name: 배포 가상머신 인메모리 inventory에 등록
-  #   add_host:
-  #     hostname: "{{ vm.default_ip }}"
-  #     groups:
-  #       - deployVmIp
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ vm.default_ip }}"
+      groups:
+        - deployVmIp
 
-  # - name: Allow 80 port for public ip
-  #   cs_firewall:
-  #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-  #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-  #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-  #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-  #     ip_address: "{{ ac_public_ip.ip_address }}"
-  #     start_port: 80
-  #     end_port: 80
-  #     protocol: tcp
+  - name: Allow 80 port for public ip
+    cs_firewall:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      start_port: 80
+      end_port: 80
+      protocol: tcp
 
-  # - name: Allow 22 port for public ip
-  #   cs_firewall:
-  #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-  #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-  #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-  #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-  #     ip_address: "{{ ac_public_ip.ip_address }}"
-  #     start_port: 22
-  #     end_port: 22
-  #     protocol: tcp
+  - name: Allow 22 port for public ip
+    cs_firewall:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      start_port: 22
+      end_port: 22
+      protocol: tcp
 
 ### Install Wordpress ###
 - name: Deploy Wordpress
