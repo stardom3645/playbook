@@ -67,7 +67,7 @@
       -zid "{{ lookup('env', 'MOLD_ZONE_ID') }}" \
       -acid "{{ lookup('env', 'AC_ID') }}" \
       -n "{{ service_group }}" \
-      -d "Open URL in browser ‘http://localhost:8080'. This is the url of the WebServer configured with 3 Tier (WebServer, WasServer, DBServer)." \
+      -d "This is the url of the WebServer configured with 3 Tier (WebServer, WasServer, DBServer)." \
       -ai "http://{{ web_vm.instances[0].public_ip }}:8080"
     when: list_jsondata.listautomationdeployedresourceresponse == {}
 
