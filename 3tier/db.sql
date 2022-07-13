@@ -12,3 +12,15 @@ CREATE TABLE `SAMPLE` (
   `reg_user` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00001','Runtime Environment','Foundation Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00002','Runtime Environment','Persistence Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00003','Runtime Environment','Presentation Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00004','Runtime Environment','Business Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00005','Runtime Environment','Batch Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00006','Runtime Environment','Integration Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00007','Runtime Environment','Integration Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00008','Runtime Environment','Integration Layer','Y','eGov');
+INSERT INTO cloud.SAMPLE (id, name, description, use_yn, reg_user) VALUES('SAMPLE-00009','Runtime Environment','Integration Layer','Y','eGov');
+INSERT INTO cloud.IDS (table_name, next_id) VALUES('SAMPLE',10);

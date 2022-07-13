@@ -3,9 +3,9 @@
 - name: Genie를 활용한 Mold VM 배포(DB Server)
   hosts: localhost
   vars:
-    db_instance_nm: 'tier-db-deploy-vm'
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
+    db_instance_nm: "tier-db-deploy-vm"
+    instance_temp: "CentOS-8-5-2111-cloudinit"
+    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 
@@ -41,7 +41,7 @@
         - db_deployVmIp
 
 ### Deploy DB Server ###
-- name: "Deploy DB Server"
+- name: Deploy DB Server
   hosts: db_deployVmIp
   gather_facts: no
   vars:
@@ -89,7 +89,7 @@
     - name: Download sql file
       get_url:
         url: "https://images.ablecloud.io/genie/3tier/db.sql"
-        dest: "/tmp/"
+        dest: /tmp/
 
     - name: Restore database
       community.mysql.mysql_db:
@@ -107,8 +107,8 @@
 
     - name: Reload firewalld
       ansible.builtin.service:
-        name: "firewalld.service"
-        state: "restarted"
+        name: firewalld.service
+        state: restarted
 
 #=============================================================
 
@@ -116,9 +116,9 @@
 - name: Genie를 활용한 Mold VM 배포(WAS Server)
   hosts: localhost
   vars:
-    was_instance_nm: 'tier-was-deploy-vm'
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
+    was_instance_nm: "tier-was-deploy-vm"
+    instance_temp: "CentOS-8-5-2111-cloudinit"
+    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 
@@ -154,12 +154,12 @@
         - was_deployVmIp
 
 ### Deploy WAS Server ##
-- name: "Deploy WAS Server"
+- name: Deploy WAS Server
   hosts: was_deployVmIp
   gather_facts: no
   vars:
     # Register db server ip in /etc/hosts for context-datasource.xml
-    db_instance_nm: 'tier-db-deploy-vm'
+    db_instance_nm: tier-db-deploy-vm
   tasks:
   
   # Install Tomcat
@@ -206,10 +206,10 @@
 
   # - name: Restart Tomcat
   #   ansible.builtin.service:
-  #     name: "tomcat.service"
-  #     state: "restarted"
+  #     name: tomcat.service
+  #     state: restarted
 
-  - name: 배포한 DB 가상머신 정보 수집
+  - name: 배포한 DB 가상머신 정보 수집("{{ db_instance_nm }}")
     cs_instance_info:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
@@ -230,13 +230,13 @@
   # - name: Replace between the expressions
   #   ansible.builtin.replace:
   #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-  #     after: '{{ vm.instances[0].nic[0].ipaddress }}'
-  #     before: 'dbserver'
+  #     after: "{{ vm.instances[0].nic[0].ipaddress }}"
+  #     before: "dbserver"
 
   - name: Restart Tomcat
     ansible.builtin.service:
-      name: "tomcat.service"
-      state: "restarted"
+      name: tomcat.service
+      state: restarted
 
   - name: Allow port 8080/tcp traffic
     ansible.posix.firewalld:
@@ -246,8 +246,8 @@
 
   - name: Reload firewalld
     ansible.builtin.service:
-      name: "firewalld.service"
-      state: "restarted"
+      name: firewalld.service
+      state: restarted
 
 #=============================================================
 
@@ -255,104 +255,105 @@
 - name: Genie를 활용한 Mold VM 배포(WEB Server)
   hosts: localhost
   vars:
-    web_instance_nm: 'tier-web-deploy-vm'
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
+    web_instance_nm: "tier-web-deploy-vm"
+    instance_temp: "CentOS-8-5-2111-cloudinit"
+    instance_computeoffer: "2C-4GB-RBD"
   gather_facts: no
   tasks:
 
-    - name: 가상머신 생성 "{{ web_instance_nm }}"
-      cs_instance:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: "{{ web_instance_nm }}"
-        template: "{{ instance_temp }}"
-        service_offering: "{{ instance_computeoffer }}"
-        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
-        user_data: |
-            #cloud-config
-            disable_root: false
-            ssh_pwauth: true
-        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-      register: web_vm
+  - name: 가상머신 생성 "{{ web_instance_nm }}"
+    cs_instance:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      name: "{{ web_instance_nm }}"
+      template: "{{ instance_temp }}"
+      service_offering: "{{ instance_computeoffer }}"
+      ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+      user_data: |
+          #cloud-config
+          disable_root: false
+          ssh_pwauth: true
+      networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: web_vm
 
-    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-      wait_for:
-        timeout: 20
+  - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+    wait_for:
+      timeout: 20
 
-    - name: 배포 가상머신 ip 정보 수집
-      debug:
-        msg: "{{ web_vm.default_ip }}"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ web_vm.default_ip }}"
 
-    - name: 배포 가상머신 인메모리 inventory에 등록
-      add_host:
-        hostname: "{{ web_vm.default_ip }}"
-        groups:
-          - web_deployVmIp
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ web_vm.default_ip }}"
+      groups:
+        - web_deployVmIp
 
-    - name: Create Public IP
-      cs_ip_address:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-      register: ac_public_ip
+  - name: Create Public IP
+    cs_ip_address:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: ac_public_ip
 
-    - name: Public IP 정보 수집
-      debug:
-        msg: "{{ ac_public_ip.ip_address }}"
+  - name: Public IP 정보 수집
+    debug:
+      msg: "{{ ac_public_ip.ip_address }}"
 
-    - name: Create a static NAT for 'ac_public_ip.ip_address' to "{{ web_instance_nm }}"
-      cs_staticnat:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        vm: "{{ web_instance_nm }}"
-      delegate_to: localhost
+  - name: Create a static NAT for "ac_public_ip.ip_address" to "{{ web_instance_nm }}"
+    cs_staticnat:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      vm: "{{ web_instance_nm }}"
+    delegate_to: localhost
 
-    - name: Allow 8080 port for public ip
-      cs_firewall:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        start_port: 8080
-        end_port: 8080
-        protocol: tcp
-      delegate_to: localhost
+  - name: Allow 8080 port for public ip
+    cs_firewall:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      start_port: 8080
+      end_port: 8080
+      protocol: tcp
+    delegate_to: localhost
 
-    - name: Allow 22 port for public ip
-      cs_firewall:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        ip_address: "{{ ac_public_ip.ip_address }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        start_port: 22
-        end_port: 22
-        protocol: tcp
-      delegate_to: localhost
+  - name: Allow 22 port for public ip
+    cs_firewall:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      start_port: 22
+      end_port: 22
+      protocol: tcp
+    delegate_to: localhost
 
-##### Deploy WebServer #####
-- name: "Deploy Web Server"
+### Deploy Web Server ###
+- name: Deploy Web Server
   hosts: web_deployVmIp
   vars:
-    was_instance_nm: 'tier-was-deploy-vm'
+    # Register was server ip in /etc/hosts for nginx configuration
+    was_instance_nm: "tier-was-deploy-vm"
   gather_facts: no
   tasks:
-  # Install nginx
-  - name: "Install nginx"
-    ansible.builtin.package:
-      name: "nginx"
-      state: "present"
 
-  # Config nginx
+  # Install nginx
+  - name: Install nginx
+    ansible.builtin.package:
+      name: nginx
+      state: present
+
   - name: Download nginx-was conf file
     get_url:
       url: "https://images.ablecloud.io/genie/3tier/nginx-was.conf"
@@ -365,28 +366,27 @@
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       name: "{{ was_instance_nm }}"
     delegate_to: localhost
-    register: vm
+    register: was_vm
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
-      msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+      msg: "{{ was_vm.instances[0].nic[0].ipaddress }}"
 
-  - name: lineinfile
+  - name: lineinfile to /etc/hosts
     lineinfile:
       path: /etc/hosts
-      line: "{{ vm.instances[0].nic[0].ipaddress }} was-server"
+      line: "{{ was_vm.instances[0].nic[0].ipaddress }} was-server"
 
-  - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  - name: Set httpd_can_network_connect flag on
     ansible.posix.seboolean:
       name: httpd_can_network_connect
       state: yes
       persistent: yes
 
-  # Start nginx
   - name: Start nginx
     ansible.builtin.service:
-      name: "nginx.service"
-      state: "restarted"
+      name: nginx.service
+      state: restarted
 
   # css, images file download
   - name: Download css file
@@ -409,30 +409,30 @@
       dest: /usr/share/nginx/html/
       remote_src: yes
 
-  - name: do permit traffic in default zone on port 8080/tcp
+  - name: Allow port 8080/tcp traffic
     ansible.posix.firewalld:
       port: 8080/tcp
       permanent: yes
       state: enabled
 
-  # - name: do permit traffic in default zone on port 443/tcp
+  # - name: Allow port 443/tcp traffic
   #   ansible.posix.firewalld:
   #     port: 443/tcp
   #     permanent: yes
   #     state: enabled
 
-  - name: firewalld reload
+  - name: Reload firewalld
     ansible.builtin.service:
-      name: "firewalld.service"
-      state: "restarted"
+      name: firewalld.service
+      state: restarted
 
 #=============================================================
 
 - name: 서비스 상태체크 스케줄러 생성
   hosts: genie_vm
   vars:
-    base_path: 'genie'
-    genie_ip: 'localhost'
+    base_path: "genie"
+    genie_ip: "localhost"
   gather_facts: no
   tasks:
     - name: AWX 초기 관리자 패스워드 추출
@@ -441,7 +441,7 @@
 
     - name: 상태체크 job 실행
       awx.awx.job_launch:
-        job_template: "tier_check"
+        job_template: tier_check
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
@@ -450,7 +450,7 @@
       awx.awx.schedule:
         name: tier_check
         state: present
-        unified_job_template: "tier_check"
+        unified_job_template: tier_check
         rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
