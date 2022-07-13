@@ -46,7 +46,7 @@
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
-      msg: "{{ vm.instances[0].default_ip }}"
+      msg: "{{ vm.default_ip }}"
 
   - name: 배포 가상머신 인메모리 inventory에 등록
     add_host:
