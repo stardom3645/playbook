@@ -15,7 +15,6 @@
     - name: Create nextcloud deploy playbook
       awx.awx.job_template:
         name: nextcloud_deploy
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
@@ -30,7 +29,6 @@
     - name: Create nextcloud state check playbook
       awx.awx.job_template:
         name: nextcloud_check
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
@@ -45,7 +43,6 @@
     - name: Create nextcloud delete playbook
       awx.awx.job_template:
         name: nextcloud_destroy
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
@@ -61,7 +58,6 @@
     - name: Create 3tier deploy playbook
       awx.awx.job_template:
         name: tier_deploy
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
@@ -73,10 +69,9 @@
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
 
-    - name: Create tier state check playbook
+    - name: Create 3tier state check playbook
       awx.awx.job_template:
         name: tier_check
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
@@ -88,10 +83,9 @@
         controller_username: admin
         controller_password: "{{ admin_password.stdout }}"
 
-    - name: Create tier delete playbook
+    - name: Create 3tier delete playbook
       awx.awx.job_template:
         name: tier_destroy
-        # copy_from: test job template
         job_type: "run"
         inventory: genie_inventory
         project: playbook_project
