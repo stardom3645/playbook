@@ -51,7 +51,7 @@
       -acid "{{ lookup('env', 'AC_ID') }}" \
       -n "{{ service_group }}" \
       -d "NextCloud is client-server software for developing and using file hosting services." \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud"
+      -ai "url( http://{{ vm.instances[0].public_ip }}/nextcloud ), Initial login id/pw( user/password ), It is Recommended that you change initial password for improved security."
     when: list_jsondata.listautomationdeployedresourceresponse == {}
 
   # 그룹조회
@@ -131,7 +131,7 @@
       -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
       -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
       -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud" \
+      -ai "url( http://{{ vm.instances[0].public_ip }}/nextcloud ), Initial login id/pw( user/password ), It is Recommended that you change initial password for improved security." \
       -s "Active"
     when: httpd_state_result.stdout == "active" and mysqld_state_result.stdout == "active"
 
@@ -142,6 +142,6 @@
       -ak "{{ lookup('env', 'MOLD_API_KEY') }}" \
       -sk "{{ lookup('env', 'MOLD_SECRET_KEY') }}" \
       -gid "{{ list2_jsondata.listautomationdeployedresourceresponse.automationdeployedresource[0].id }}" \
-      -ai "http://{{ vm.instances[0].public_ip }}/nextcloud" \
+      -ai "url( http://{{ vm.instances[0].public_ip }}/nextcloud ), Initial login id/pw( user/password ), It is Recommended that you change initial password for improved security." \
       -s "Inactive"
     when: httpd_state_result.stdout != "active" or mysqld_state_result.stdout != "active"

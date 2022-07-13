@@ -131,7 +131,7 @@
     nextcloud_db_name: "nextcloud"
     nextcloud_db_user: "nextcloud"
     nextcloud_db_pass: "password"
-    nextcloud_admin_name: "nc-admin"
+    nextcloud_admin_name: "user"
     nextcloud_admin_pass: "password"
     nextcloud_data_dir: "/var/www/html/nextcloud/data"
   tasks:
