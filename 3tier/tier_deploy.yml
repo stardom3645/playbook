@@ -104,10 +104,8 @@
         permanent: yes
         state: enabled
 
-    - name: Reload firewalld
-      ansible.builtin.service:
-        name: firewalld.service
-        state: restarted
+    - name: Start firewalld service
+      systemd: name=firewalld state=restarted
 
 #=============================================================
 
@@ -184,12 +182,8 @@
       url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
       dest: "/etc/systemd/system/"
     
-  - name: Start and Enable Tomcat
-    ansible.builtin.systemd:
-      daemon_reload: yes
-      name: tomcat
-      state: restarted
-      enabled: yes
+  - name: Start tomcat service
+    systemd: name=tomcat state=restarted enabled=yes
 
   - name: Delete ROOT Directory
     command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
@@ -201,11 +195,6 @@
     get_url:
       url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
       dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
-
-  # - name: Restart Tomcat
-  #   ansible.builtin.service:
-  #     name: tomcat.service
-  #     state: restarted
 
   - name: 배포한 DB 가상머신 정보 수집("{{ db_instance_nm }}")
     cs_instance_info:
@@ -231,10 +220,8 @@
   #     after: "{{ vm.instances[0].nic[0].ipaddress }}"
   #     before: "dbserver"
 
-  - name: Restart Tomcat
-    ansible.builtin.service:
-      name: tomcat.service
-      state: restarted
+  - name: Start tomcat service
+    systemd: name=tomcat state=restarted
 
   - name: Allow port 8080/tcp traffic
     ansible.posix.firewalld:
@@ -242,10 +229,8 @@
       permanent: yes
       state: enabled
 
-  - name: Reload firewalld
-    ansible.builtin.service:
-      name: firewalld.service
-      state: restarted
+  - name: Start firewalld service
+    systemd: name=firewalld state=restarted
 
 #=============================================================
 
@@ -312,28 +297,19 @@
       vm: "{{ web_instance_nm }}"
     delegate_to: localhost
 
-  - name: Allow 8080 port for public ip
+  - name: Allow port for public ip
     cs_firewall:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
-      start_port: 8080
-      end_port: 8080
-      protocol: tcp
-    delegate_to: localhost
-
-  - name: Allow 22 port for public ip
-    cs_firewall:
-      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      ip_address: "{{ ac_public_ip.ip_address }}"
-      start_port: 22
-      end_port: 22
-      protocol: tcp
+      start_port: "{{ item.port }}"
+      end_port: "{{ item.port }}"
+      protocol: "{{ item.protocol }}"
+    with_items:
+        - {port: 8080, protocol: tcp}
+        - {port: 22, protocol: tcp}
     delegate_to: localhost
 
 ### Deploy Web Server ###
@@ -380,10 +356,8 @@
       state: yes
       persistent: yes
 
-  - name: Start nginx
-    ansible.builtin.service:
-      name: nginx.service
-      state: restarted
+  - name: Start nginx service
+    systemd: name=nginx state=restarted
 
   # css, images file download
   - name: Download css file
@@ -418,10 +392,8 @@
   #     permanent: yes
   #     state: enabled
 
-  - name: Reload firewalld
-    ansible.builtin.service:
-      name: firewalld.service
-      state: restarted
+  - name: Start firewalld service
+    systemd: name=firewalld state=restarted
 
 #=============================================================
 

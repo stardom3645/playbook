@@ -75,28 +75,19 @@
       vm: "{{ instance_nm }}"
     delegate_to: localhost
 
-  - name: Allow 80 port for public ip
+  - name: Allow port for public ip
     cs_firewall:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      start_port: 80
-      end_port: 80
-      protocol: tcp
-    delegate_to: localhost
-
-  - name: Allow 22 port for public ip
-    cs_firewall:
-      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_public_ip.ip_address }}"
-      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      start_port: 22
-      end_port: 22
-      protocol: tcp
+      start_port: "{{ item.port }}"
+      end_port: "{{ item.port }}"
+      protocol: "{{ item.protocol }}"
+    with_items:
+        - {port: 80, protocol: tcp}
+        - {port: 22, protocol: tcp}
     delegate_to: localhost
 
 ### Deploy Nextcloud ###
@@ -147,12 +138,8 @@
         name: "{{ php_packages }}"
         state: present
       become: true
-    - name: Start and Enable httpd
-      ansible.builtin.service:
-        name: httpd.service
-        state: started
-        enabled: true
-      become: true
+    - name: Start httpd service
+      systemd: name=httpd state=started enabled=yes
 
     # Install Mariadb
     - name: Install mariadb
@@ -160,12 +147,8 @@
         name: "{{ mariadb_packages }}"
         state: present
       become: true
-    - name: Start & Enable mariadb
-      ansible.builtin.service:
-        name: mariadb.service
-        state: started
-        enabled: true
-      become: true
+    - name: Start mariadb service
+      systemd: name=mariadb state=started enabled=yes
     - name: Configure mariadb - root user
       community.mysql.mysql_user:
         name: root
@@ -271,12 +254,8 @@
         name: firewalld
         state: present
       become: true
-    - name: Start & Enable firewalld
-      ansible.builtin.service:
-        name: firewalld.service
-        state: started
-        enabled: true
-      become: true
+    - name: Start firewalld service
+      systemd: name=firewalld state=started enabled=yes
     - name: Manage Firewalld
       ansible.posix.firewalld:
         service: "{{ item }}"

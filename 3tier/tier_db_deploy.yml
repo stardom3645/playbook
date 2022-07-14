@@ -106,7 +106,5 @@
         permanent: yes
         state: enabled
 
-    - name: Reload firewalld
-      ansible.builtin.service:
-        name: firewalld.service
-        state: restarted
+    - name: Start firewalld service
+      systemd: name=firewalld state=restarted enabled=yes

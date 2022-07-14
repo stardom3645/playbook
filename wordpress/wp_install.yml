@@ -37,21 +37,17 @@
         groups:
           - deployVmIp
 
-    - name: 10.10.1.109:80 포트 허용
+    - name: 10.10.1.109 포트 허용
       cs_firewall:
         ip_address: 10.10.1.109
-        start_port: 80
-        end_port: 80
-        protocol: tcp
+        start_port: "{{ item.port }}"
+        end_port: "{{ item.port }}"
+        protocol: "{{ item.protocol }}"
+      with_items:
+          - {port: 80, protocol: tcp}
+          - {port: 22, protocol: tcp}
       delegate_to: localhost
 
-    - name: 10.10.1.109:22 포트 허용
-      cs_firewall:
-        ip_address: 10.10.1.109
-        start_port: 22
-        end_port: 22
-        protocol: tcp
-      delegate_to: localhost
 ##### Install wordpress #####
 
 - name: deploy 가상머신에 wordpress 설치
