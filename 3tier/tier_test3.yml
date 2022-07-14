@@ -1,0 +1,57 @@
+# Install MySQL
+- name: Install MySQL Packages
+  yum: name={{ item }} update_cache=yes state=latest
+  loop: [ 'mysql-server', 'php-mysqlnd', 'python3-PyMySQL' ]
+
+- name: Start mysqld service
+  systemd: name=mysqld state=started enabled=yes
+    
+- name: Set MySQL root Password
+  community.mysql.mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: ""
+    state: present
+
+- name: Set MySQL root Grants
+  community.mysql.mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    host: "{{ item }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+  with_items:
+    - localhost
+    - "%"
+
+- name: Create database
+  community.mysql.mysql_db:
+    name: "{{ mysql_db }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Download sql file
+  get_url:
+    url: "https://images.ablecloud.io/genie/3tier/db.sql"
+    dest: /tmp/
+
+- name: Restore database
+  community.mysql.mysql_db:
+    name: "{{ mysql_db }}"
+    state: import
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    target: /tmp/db.sql
+
+- name: Allow port
+  ansible.posix.firewalld:
+    port: "{{ db_port }}/{{ db_protocol }}"
+    permanent: yes
+    state: enabled
+
+- name: Start firewalld service
+  systemd: name=firewalld state=restarted
