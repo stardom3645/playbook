@@ -24,9 +24,10 @@
       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
     register: vm
 
-  - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-    wait_for:
-      timeout: 20
+  - name: 생성한 가상머신이 부팅이 완료될 때까지 대기
+    wait_for_connection:
+      delay: 20
+      timeout: 300
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
