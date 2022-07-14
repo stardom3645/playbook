@@ -1,32 +1,10 @@
+---
+### Deploy DB VirtualMachine ###
+- name: Genie를 활용한 Mold VM 배포(DB Server)
+  hosts: localhost
+  vars:
+    db_instance_nm: "tier-db-deploy-vm2"
+  gather_facts: no
+  tasks:
 
-- name: 가상머신 생성 "{{ db_instance_nm }}"
-  cs_instance:
-    api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-    api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-    api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-    zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-    name: "{{ db_instance_nm }}"
-    template: "{{ instance_temp }}"
-    service_offering: "{{ instance_computeoffer }}"
-    ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
-    user_data: |
-        #cloud-config
-        disable_root: false
-        ssh_pwauth: true
-    networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-  register: db_vm
-
-- name: 생성한 가상머신이 부팅이 완료될 때까지 대기
-  wait_for_connection:
-    delay: 20
-    timeout: 300
-
-- name: 배포 가상머신 ip 정보 수집
-  debug:
-    msg: "{{ db_vm.default_ip }}"
-
-- name: 배포 가상머신 인메모리 inventory에 등록
-  add_host:
-    hostname: "{{ db_vm.default_ip }}"
-    groups:
-      - db_deployVmIp
+    - include: 3tier/tier_test2.yml
