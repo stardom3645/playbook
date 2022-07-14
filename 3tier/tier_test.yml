@@ -8,4 +8,4 @@
   tasks:
 
     - name: Include task list in play
-      ansible.builtin.include_tasks: 3tier/tier_test2.yml
+      ansible.builtin.include_tasks: tier_test2.yml
