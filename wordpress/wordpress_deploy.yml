@@ -68,9 +68,9 @@
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
-      start_port: "{{ item.var1 }}"
-      end_port: "{{ item.var1 }}"
-      protocol: "{{ item.var2 }}"
+      start_port: "{{ item.port }}"
+      end_port: "{{ item.port }}"
+      protocol: "{{ item.protocol }}"
     with_items:
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
