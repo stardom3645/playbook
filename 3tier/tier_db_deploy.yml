@@ -26,7 +26,7 @@
 
   - name: Test reachability to 10.10.10.10 using default vrf
     ansible.netcommon.net_ping:
-      dest: db_vm.default_ip
+      dest: "{{ db_vm.default_ip }}"
       
   # - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
   #   wait_for:
