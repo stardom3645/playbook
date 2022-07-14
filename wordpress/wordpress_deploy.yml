@@ -69,22 +69,11 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       start_port: "{{ item.var1 }}"
-      end_port: "{{ item.var2 }}"
-      protocol: tcp
+      end_port: "{{ item.var1 }}"
+      protocol: "{{ item.var2 }}"
     with_items:
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
-
-  # - name: Allow 22 port for public ip
-  #   cs_firewall:
-  #     api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-  #     api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-  #     api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-  #     zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-  #     ip_address: "{{ ac_public_ip.ip_address }}"
-  #     start_port: 22
-  #     end_port: 22
-  #     protocol: tcp
 
 ### Install Wordpress ###
 - name: Deploy Wordpress
