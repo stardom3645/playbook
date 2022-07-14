@@ -4,6 +4,8 @@
   hosts: localhost
   vars:
     db_instance_nm: "tier-db-deploy-vm"
+    db_port: "3306"
+    db_protocol: "tcp"
   gather_facts: no
   tasks:
 
@@ -98,9 +100,9 @@
         login_password: "{{ mysql_root_password }}"
         target: /tmp/db.sql
 
-    - name: Allow port 3306/tcp traffic
+    - name: Allow port
       ansible.posix.firewalld:
-        port: 3306/tcp
+        port: "{{ db_port }}"/"{{ db_protocol }}"
         permanent: yes
         state: enabled
 
@@ -114,6 +116,8 @@
   hosts: localhost
   vars:
     was_instance_nm: "tier-was-deploy-vm"
+    tomcat_port: "8080"
+    tomcat_protocol: "tcp"
   gather_facts: no
   tasks:
 
@@ -223,9 +227,9 @@
   - name: Start tomcat service
     systemd: name=tomcat state=restarted
 
-  - name: Allow port 8080/tcp traffic
+  - name: Allow port
     ansible.posix.firewalld:
-      port: 8080/tcp
+      port: port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 
@@ -239,6 +243,8 @@
   hosts: localhost
   vars:
     web_instance_nm: "tier-web-deploy-vm"
+    nginx_port: "8080"
+    nginx_protocol: "tcp"
   gather_facts: no
   tasks:
 
@@ -380,17 +386,11 @@
       dest: /usr/share/nginx/html/
       remote_src: yes
 
-  - name: Allow port 8080/tcp traffic
+  - name: Allow port
     ansible.posix.firewalld:
-      port: 8080/tcp
+      port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
-
-  # - name: Allow port 443/tcp traffic
-  #   ansible.posix.firewalld:
-  #     port: 443/tcp
-  #     permanent: yes
-  #     state: enabled
 
   - name: Start firewalld service
     systemd: name=firewalld state=restarted

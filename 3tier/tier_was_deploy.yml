@@ -4,6 +4,8 @@
   hosts: localhost
   vars:
     was_instance_nm: "tier-was-deploy-vm"
+    tomcat_port: "8080"
+    tomcat_protocol: "tcp"
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -115,9 +117,9 @@
   - name: Start tomcat service
     systemd: name=tomcat state=restarted
 
-  - name: Allow port 8080/tcp traffic
+  - name: Allow port
     ansible.posix.firewalld:
-      port: 8080/tcp
+      port: port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 

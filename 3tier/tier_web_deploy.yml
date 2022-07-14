@@ -4,6 +4,8 @@
   hosts: localhost
   vars:
     web_instance_nm: "tier-web-deploy-vm"
+    nginx_port: "8080"
+    nginx_protocol: "tcp"
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -147,17 +149,11 @@
       dest: /usr/share/nginx/html/
       remote_src: yes
 
-  - name: Allow port 8080/tcp traffic
+  - name: Allow port
     ansible.posix.firewalld:
-      port: 8080/tcp
+      port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
-
-  # - name: Allow port 443/tcp traffic
-  #   ansible.posix.firewalld:
-  #     port: 443/tcp
-  #     permanent: yes
-  #     state: enabled
 
   - name: Start firewalld service
     systemd: name=firewalld state=restarted

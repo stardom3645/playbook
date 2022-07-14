@@ -4,6 +4,8 @@
   hosts: localhost
   vars:
     db_instance_nm: "tier-db-deploy-vm2"
+    db_port: "3306"
+    db_protocol: "tcp"
     instance_temp: 'CentOS-8-5-2111-cloudinit'
     instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
@@ -100,9 +102,9 @@
         login_password: "{{ mysql_root_password }}"
         target: /tmp/db.sql
 
-    - name: Allow port 3306/tcp traffic
+    - name: Allow port
       ansible.posix.firewalld:
-        port: 3306/tcp
+        port: "{{ db_port }}"/"{{ db_protocol }}"
         permanent: yes
         state: enabled
 
