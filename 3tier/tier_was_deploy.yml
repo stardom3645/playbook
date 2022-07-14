@@ -1,13 +1,8 @@
----
 ### Deploy WAS VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포(WAS Server)
   hosts: localhost
   vars:
     was_instance_nm: "tier-was-deploy-vm"
-    tomcat_port: "8080"
-    tomcat_protocol: "tcp"
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
   tasks:
 
@@ -48,6 +43,9 @@
   hosts: was_deployVmIp
   gather_facts: no
   vars:
+    tomcat_port: "8080"
+    tomcat_protocol: "tcp"
+
     # Register db server ip in /etc/hosts for context-datasource.xml
     db_instance_nm: tier-db-deploy-vm
   tasks:
@@ -57,7 +55,7 @@
     yum:
       name: java-1.8.0-openjdk
       state: present
-  
+
   - name: Download Tomcat
     get_url:
       url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
@@ -119,7 +117,7 @@
 
   - name: Allow port
     ansible.posix.firewalld:
-      port: port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
+      port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 

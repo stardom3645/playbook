@@ -3,11 +3,7 @@
 - name: Genie를 활용한 Mold VM 배포(DB Server)
   hosts: localhost
   vars:
-    db_instance_nm: "tier-db-deploy-vm2"
-    db_port: "3306"
-    db_protocol: "tcp"
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
+    db_instance_nm: "tier-db-deploy-vm"
   gather_facts: no
   tasks:
 
@@ -48,9 +44,12 @@
   hosts: db_deployVmIp
   gather_facts: no
   vars:
+    db_port: "3306"
+    db_protocol: "tcp"
+
     # MySQL Settings
-    - mysql_root_password: Ablecloud1!
-    - mysql_db: cloud
+    mysql_root_password: Ablecloud1!
+    mysql_db: cloud
   tasks:
 
     # Install MySQL
@@ -109,4 +108,4 @@
         state: enabled
 
     - name: Start firewalld service
-      systemd: name=firewalld state=restarted enabled=yes
+      systemd: name=firewalld state=restarted

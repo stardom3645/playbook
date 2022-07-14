@@ -1,13 +1,8 @@
----
 ### Deploy WEB VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포(WEB Server)
   hosts: localhost
   vars:
     web_instance_nm: "tier-web-deploy-vm"
-    nginx_port: "8080"
-    nginx_protocol: "tcp"
-    instance_temp: 'CentOS-8-5-2111-cloudinit'
-    instance_computeoffer: '2C-4GB-RBD'
   gather_facts: no
   tasks:
 
@@ -85,6 +80,9 @@
 - name: Deploy Web Server
   hosts: web_deployVmIp
   vars:
+    nginx_port: "8080"
+    nginx_protocol: "tcp"
+
     # Register was server ip in /etc/hosts for nginx configuration
     was_instance_nm: "tier-was-deploy-vm"
   gather_facts: no
@@ -151,7 +149,7 @@
 
   - name: Allow port
     ansible.posix.firewalld:
-      port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
+      port: "{{ nginx_port }}/{{ nginx_protocol }}"
       permanent: yes
       state: enabled
 
