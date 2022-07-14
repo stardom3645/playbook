@@ -25,8 +25,9 @@
     register: db_vm
 
   - name: ping test
-    net_ping:
-      dest: "{{ db_vm.default_ip }}"
+    wait_for_connection:
+      delay: 20
+      timeout: 300
       
   # - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
   #   wait_for:
