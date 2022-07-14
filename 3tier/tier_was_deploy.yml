@@ -1,148 +1,135 @@
 ---
-- name: Genie를 활용한 Mold VM 배포
+### Deploy WAS VirtualMachine ###
+- name: Genie를 활용한 Mold VM 배포(WAS Server)
   hosts: localhost
   vars:
-    was_instance_nm: 'tier-was-deploy-vm'
+    was_instance_nm: "tier-was-deploy-vm"
   gather_facts: no
   tasks:
-##### Deploy VirtualMachine #####
 
-    - name: 가상머신 생성 "{{ was_instance_nm }}"
-      cs_instance:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-        name: "{{ was_instance_nm }}"
-        template: "{{ instance_temp }}"
-        service_offering: "{{ instance_computeoffer }}"
-        ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
-        user_data: |
-            #cloud-config
-            disable_root: false
-            ssh_pwauth: true
-        networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-      register: vm
+  - name: 가상머신 생성 "{{ was_instance_nm }}"
+    cs_instance:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      name: "{{ was_instance_nm }}"
+      template: "{{ instance_temp }}"
+      service_offering: "{{ instance_computeoffer }}"
+      ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+      user_data: |
+          #cloud-config
+          disable_root: false
+          ssh_pwauth: true
+      networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: was_vm
 
-    - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-      wait_for:
-        timeout: 20
+  - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+    wait_for:
+      timeout: 20
 
-    - name: 배포 가상머신 ip 정보 수집
-      debug:
-        msg: "{{ vm.default_ip }}"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ was_vm.default_ip }}"
 
-    - name: 배포 가상머신 인메모리 inventory에 등록
-      add_host:
-        hostname: "{{ vm.default_ip }}"
-        groups:
-          - was-deployVmIp
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ was_vm.default_ip }}"
+      groups:
+        - was_deployVmIp
 
-##### Deploy WasServer #####
-- name: "Deploy WasServer"
-  hosts: was-deployVmIp
+### Deploy WAS Server ##
+- name: Deploy WAS Server
+  hosts: was_deployVmIp
   gather_facts: no
   vars:
-    db_instance_nm: 'tier-db-deploy-vm'
+    # Register db server ip in /etc/hosts for context-datasource.xml
+    db_instance_nm: tier-db-deploy-vm
   tasks:
+  
   # Install Tomcat
-    - name: Install Java 8 CentOS
-      yum:
-        name: java-1.8.0-openjdk
-        state: present
+  - name: Install Java 8
+    yum:
+      name: java-1.8.0-openjdk
+      state: present
+  
+  - name: Download Tomcat
+    get_url:
+      url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
+      dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
+
+  - name: Unarchive Tomcat
+    ansible.builtin.unarchive:
+      src: "/tmp/apache-tomcat-9.0.64.tar.gz"
+      dest: /usr/local
+      remote_src: yes
+      # extra_opts: "--strip-components=1"
+      # creates: /usr/local/bin
+
+  - name: Download Tomcat service file
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
+      dest: "/etc/systemd/system/"
     
-    - name: Download Tomcat
-      get_url:
-        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
-        dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
+  - name: Start and Enable Tomcat
+    ansible.builtin.systemd:
+      daemon_reload: yes
+      name: tomcat
+      state: restarted
+      enabled: yes
 
-    # - name: Create a tomcat directory
-    #   file:
-    #     path: /usr/share/tomcat
-    #     state: directory
-
-    - name: Extract tomcat archive
-      ansible.builtin.unarchive:
-        src: "/tmp/apache-tomcat-9.0.64.tar.gz"
-        dest: /usr/local
-        remote_src: yes
-        # extra_opts: "--strip-components=1"
-        # creates: /usr/local/bin
-
-    - name: Download tomcat service file
-      get_url:
-        url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
-        dest: "/etc/systemd/system/"
-      
-    - name: Start and enable tomcat
-      ansible.builtin.systemd:
-        daemon_reload: yes
-        name: tomcat
-        state: restarted
-        enabled: yes
-
-    # deploy war
-    - name: Delete ROOT Directory
-      command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
+  - name: Delete ROOT Directory
+    command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
   #     ansible.builtin.file:
   #       path: "/usr/local/apache-tomcat-9.0.64/webapps/ROOT"
   #       state: absent
 
-    - name: Download War
-      get_url:
-        url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
-        dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
+  - name: Download ROOT.war
+    get_url:
+      url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
+      dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
 
-    # - name: Copy file with owner and permissions
-    #   ansible.builtin.copy:
-    #     src: /tmp/ROOT.war
-    #     dest: /usr/local/apache-tomcat-9.0.64/webapps/
-    #     remote_src: yes
-        # mode: '0644'
+  # - name: Restart Tomcat
+  #   ansible.builtin.service:
+  #     name: tomcat.service
+  #     state: restarted
 
-    - name: Start tomcat
-      ansible.builtin.service:
-        name: "tomcat.service"
-        state: "restarted"
+  - name: 배포한 DB 가상머신 정보 수집("{{ db_instance_nm }}")
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ db_instance_nm }}"
+    delegate_to: localhost
+    register: db_vm
 
-    - name: 배포한 DB가상머신 정보 수집
-      cs_instance_info:
-        api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-        api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-        api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-        name: "{{ db_instance_nm }}"
-      delegate_to: localhost
-      register: vm
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ db_vm.instances[0].nic[0].ipaddress }}"
 
-    - name: 배포 가상머신 ip 정보 수집
-      debug:
-        msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+  - name: lineinfile to /etc/hosts
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ db_vm.instances[0].nic[0].ipaddress }} db-server"
 
-    # - name: Replace between the expressions
-    #   ansible.builtin.replace:
-    #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-    #     after: '{{ vm.instances[0].nic[0].ipaddress }}'
-    #     before: 'dbserver'
+  # - name: Replace between the expressions
+  #   ansible.builtin.replace:
+  #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
+  #     after: "{{ vm.instances[0].nic[0].ipaddress }}"
+  #     before: "dbserver"
 
-    - name: lineinfile
-      lineinfile:
-        path: /etc/hosts
-        line: "{{ vm.instances[0].nic[0].ipaddress }} db-server"
+  - name: Restart Tomcat
+    ansible.builtin.service:
+      name: tomcat.service
+      state: restarted
 
-    - name: Start tomcat
-      ansible.builtin.service:
-        name: "tomcat.service"
-        state: "restarted"
+  - name: Allow port 8080/tcp traffic
+    ansible.posix.firewalld:
+      port: 8080/tcp
+      permanent: yes
+      state: enabled
 
-    - name: do permit traffic in default zone on port 8080/tcp
-      ansible.posix.firewalld:
-        port: 8080/tcp
-        permanent: yes
-        state: enabled
-
-    - name: firewalld reload
-      ansible.builtin.service:
-        name: "firewalld.service"
-        state: "restarted"
-
-    
+  - name: Reload firewalld
+    ansible.builtin.service:
+      name: firewalld.service
+      state: restarted

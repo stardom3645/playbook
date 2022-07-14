@@ -1,9 +1,9 @@
 ---
-#### Deploy DB VirtualMachine ####
+### Deploy DB VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포(DB Server)
   hosts: localhost
   vars:
-    db_instance_nm: 'tier-db-deploy-vm'
+    db_instance_nm: "tier-db-deploy-vm"
   gather_facts: no
   tasks:
 
@@ -24,9 +24,13 @@
       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
     register: db_vm
 
-  - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
-    wait_for:
-      timeout: 20
+  - name: Test reachability to 10.10.10.10 using default vrf
+    ansible.netcommon.net_ping:
+      dest: db_vm.default_ip
+      
+  # - name: 가상머신 생성 후 ssh_key 생성을 위한 대기
+  #   wait_for:
+  #     timeout: 20
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
@@ -38,8 +42,8 @@
       groups:
         - db_deployVmIp
 
-#### Deploy DBServer ####
-- name: "Deploy DB Server"
+### Deploy DB Server ###
+- name: Deploy DB Server
   hosts: db_deployVmIp
   gather_facts: no
   vars:
@@ -87,7 +91,7 @@
     - name: Download sql file
       get_url:
         url: "https://images.ablecloud.io/genie/3tier/db.sql"
-        dest: "/tmp/"
+        dest: /tmp/
 
     - name: Restore database
       community.mysql.mysql_db:
@@ -105,5 +109,5 @@
 
     - name: Reload firewalld
       ansible.builtin.service:
-        name: "firewalld.service"
-        state: "restarted"
+        name: firewalld.service
+        state: restarted
