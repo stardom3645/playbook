@@ -104,7 +104,7 @@
 
     - name: Allow port
       ansible.posix.firewalld:
-        port: "{{ db_port }}"/"{{ db_protocol }}"
+        port: "{{ db_port }}/{{ db_protocol }}"
         permanent: yes
         state: enabled
 

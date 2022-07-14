@@ -151,7 +151,7 @@
 
   - name: Allow port
     ansible.posix.firewalld:
-      port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
+      port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 

@@ -102,7 +102,7 @@
 
     - name: Allow port
       ansible.posix.firewalld:
-        port: "{{ db_port }}"/"{{ db_protocol }}"
+        port: "{{ db_port }}/{{ db_protocol }}"
         permanent: yes
         state: enabled
 
@@ -229,7 +229,7 @@
 
   - name: Allow port
     ansible.posix.firewalld:
-      port: port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
+      port: port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 
@@ -388,7 +388,7 @@
 
   - name: Allow port
     ansible.posix.firewalld:
-      port: "{{ tomcat_port }}"/"{{ tomcat_protocol }}"
+      port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
       permanent: yes
       state: enabled
 
