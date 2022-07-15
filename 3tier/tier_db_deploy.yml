@@ -3,7 +3,7 @@
 - name: Genie를 활용한 Mold VM 배포(DB Server)
   hosts: localhost
   vars:
-    db_instance_nm: "tier-db-deploy-vm"
+    db_instance_nm: "tier-db-deploy-vm2"
   gather_facts: no
   tasks:
 
@@ -88,10 +88,10 @@
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
-    - name: Download sql file
-      get_url:
-        url: "https://images.ablecloud.io/genie/3tier/db.sql"
-        dest: /tmp/
+    # - name: Download sql file
+    #   get_url:
+    #     url: "https://images.ablecloud.io/genie/3tier/db.sql"
+    #     dest: /tmp/
 
     - name: Restore database
       community.mysql.mysql_db:
@@ -99,7 +99,7 @@
         state: import
         login_user: root
         login_password: "{{ mysql_root_password }}"
-        target: /tmp/db.sql
+        target: https://images.ablecloud.io/genie/3tier/db.sql
 
     - name: Allow port
       ansible.posix.firewalld:
