@@ -99,6 +99,8 @@
       credentials:
         - "automation_controller_credential"
       state: "present"
+      survey_enabled: yes
+      survey_spec: {"정말 삭제하시겠습니까?(Y: yes, N: no)": "Y"}
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
