@@ -101,14 +101,14 @@
       state: "present"
       survey_enabled: yes
       survey_spec:
-        name: Destroy Survey
-        description: Confirm delete
-        spec:
-        - type: text
-          question_name: 삭제하시겠습니까?(Y/N)
-          variable: delete_yn
-          required: true
-          default: N
+        - name: Destroy Survey
+          description: Confirm delete
+          spec:
+          - type: text
+            question_name: 삭제하시겠습니까?(Y/N) test
+            variable: delete_yn
+            required: true
+            default: N
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
