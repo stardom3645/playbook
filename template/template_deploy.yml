@@ -12,82 +12,82 @@
     register: admin_password
 
   # Wordpress
-  # - name: Create wordpress deploy playbook
-  #   awx.awx.job_template:
-  #     name: wordpress_deploy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: wordpress/wordpress_deploy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
-  #     extra_vars: 
-  #       instance_temp: "CentOS-8-cloudinit"
-  #       instance_computeoffer: "2C-4GB-RBD"
+  - name: Create wordpress deploy playbook
+    awx.awx.job_template:
+      name: wordpress_deploy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: wordpress/wordpress_deploy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+      extra_vars: 
+        instance_temp: "CentOS-8-cloudinit"
+        instance_computeoffer: "2C-4GB-RBD"
 
-  # - name: Create wordpress state check playbook
-  #   awx.awx.job_template:
-  #     name: wordpress_check
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: wordpress/wordpress_check.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create wordpress state check playbook
+    awx.awx.job_template:
+      name: wordpress_check
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: wordpress/wordpress_check.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
 
-  # - name: Create wordpress delete playbook
-  #   awx.awx.job_template:
-  #     name: wordpress_destroy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: wordpress/wordpress_destroy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create wordpress delete playbook
+    awx.awx.job_template:
+      name: wordpress_destroy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: wordpress/wordpress_destroy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
       
-  # # Nextcloud
-  # - name: Create nextcloud deploy playbook
-  #   awx.awx.job_template:
-  #     name: nextcloud_deploy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: nextcloud/nextcloud_deploy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
-  #     extra_vars: 
-  #       instance_temp: "CentOS-8-cloudinit"
-  #       instance_computeoffer: "2C-4GB-RBD"
+  # Nextcloud
+  - name: Create nextcloud deploy playbook
+    awx.awx.job_template:
+      name: nextcloud_deploy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: nextcloud/nextcloud_deploy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+      extra_vars: 
+        instance_temp: "CentOS-8-cloudinit"
+        instance_computeoffer: "2C-4GB-RBD"
 
-  # - name: Create nextcloud state check playbook
-  #   awx.awx.job_template:
-  #     name: nextcloud_check
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: nextcloud/nextcloud_check.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create nextcloud state check playbook
+    awx.awx.job_template:
+      name: nextcloud_check
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: nextcloud/nextcloud_check.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
 
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
@@ -99,62 +99,52 @@
       credentials:
         - "automation_controller_credential"
       state: "present"
-      survey_enabled: yes
-      survey_spec:
-        name: Destroy Survey
-        description: Confirm delete
-        spec:
-        - type: text
-          question_name: 삭제하시겠습니까?(Y/N) test
-          variable: delete_yn
-          required: true
-          default: N
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
 
   # 3Tier
-  # - name: Create 3tier deploy playbook
-  #   awx.awx.job_template:
-  #     name: tier_deploy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: 3tier/tier_deploy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
-  #     extra_vars: 
-  #       instance_temp: "CentOS-8-cloudinit"
-  #       instance_computeoffer: "2C-4GB-RBD"
+  - name: Create 3tier deploy playbook
+    awx.awx.job_template:
+      name: tier_deploy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: 3tier/tier_deploy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+      extra_vars: 
+        instance_temp: "CentOS-8-cloudinit"
+        instance_computeoffer: "2C-4GB-RBD"
 
-  # - name: Create 3tier state check playbook
-  #   awx.awx.job_template:
-  #     name: tier_check
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: 3tier/tier_check.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create 3tier state check playbook
+    awx.awx.job_template:
+      name: tier_check
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: 3tier/tier_check.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
 
-  # - name: Create 3tier delete playbook
-  #   awx.awx.job_template:
-  #     name: tier_destroy
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: 3tier/tier_destroy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"    
+  - name: Create 3tier delete playbook
+    awx.awx.job_template:
+      name: tier_destroy
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: 3tier/tier_destroy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"    
