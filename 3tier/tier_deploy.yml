@@ -172,12 +172,12 @@
 
   # - name: Download Tomcat
   #   get_url:
-  #     url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
-  #     dest: "/tmp/apache-tomcat-9.0.64.tar.gz"
+  #     url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
+  #     dest: "/tmp/apache-tomcat-9.0.65.tar.gz"
 
   - name: Download and Unarchive Tomcat
     ansible.builtin.unarchive:
-      # src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
+      # src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
       src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
       dest: /usr/local
       remote_src: yes
@@ -193,15 +193,15 @@
     systemd: name=tomcat state=restarted enabled=yes
 
   - name: Delete ROOT Directory
-    command: rm -rf /usr/local/apache-tomcat-9.0.64/webapps/ROOT
+    command: rm -rf /usr/local/apache-tomcat-9.0.65/webapps/ROOT
   #     ansible.builtin.file:
-  #       path: "/usr/local/apache-tomcat-9.0.64/webapps/ROOT"
+  #       path: "/usr/local/apache-tomcat-9.0.65/webapps/ROOT"
   #       state: absent
 
   - name: Download ROOT.war
     get_url:
       url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
-      dest: "/usr/local/apache-tomcat-9.0.64/webapps/"
+      dest: "/usr/local/apache-tomcat-9.0.65/webapps/"
 
   - name: 배포한 DB 가상머신 정보 수집("{{ db_instance_nm }}")
     cs_instance_info:
@@ -223,7 +223,7 @@
 
   # - name: Replace between the expressions
   #   ansible.builtin.replace:
-  #     path: /usr/local/apache-tomcat-9.0.64/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
+  #     path: /usr/local/apache-tomcat-9.0.65/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
   #     after: "{{ vm.instances[0].nic[0].ipaddress }}"
   #     before: "dbserver"
 
