@@ -61,6 +61,8 @@
       controller_password: "{{ admin_password.stdout }}"
       
   # Nextcloud
+  # - name: Create instnace name
+
   - name: Create nextcloud deploy playbook
     awx.awx.job_template:
       name: 넥스트클라우드 - 배포
@@ -76,38 +78,43 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
+        instance_nm: "nextcloud-deploy-vm{{ 99999 | random | to_uuid }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 
-  - name: Create nextcloud state check playbook
-    awx.awx.job_template:
-      name: 넥스트클라우드 - 상태체크
-      description: 넥스트클라우드 상태체크
-      job_type: "run"
-      inventory: genie_inventory
-      project: playbook_project
-      playbook: nextcloud/nextcloud_check.yml
-      credentials:
-        - "automation_controller_credential"
-      state: "present"
-      controller_host: "http://{{ genie_ip }}:80"
-      controller_username: admin
-      controller_password: "{{ admin_password.stdout }}"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ instance_nm }}"
 
-  - name: Create nextcloud delete playbook
-    awx.awx.job_template:
-      name: 넥스트클라우드 - 삭제
-      description: 넥스트클라우드 삭제
-      job_type: "run"
-      inventory: genie_inventory
-      project: playbook_project
-      playbook: nextcloud/nextcloud_destroy.yml
-      credentials:
-        - "automation_controller_credential"
-      state: "present"
-      controller_host: "http://{{ genie_ip }}:80"
-      controller_username: admin
-      controller_password: "{{ admin_password.stdout }}"
+  # - name: Create nextcloud state check playbook
+  #   awx.awx.job_template:
+  #     name: 넥스트클라우드 - 상태체크
+  #     description: 넥스트클라우드 상태체크
+  #     job_type: "run"
+  #     inventory: genie_inventory
+  #     project: playbook_project
+  #     playbook: nextcloud/nextcloud_check.yml
+  #     credentials:
+  #       - "automation_controller_credential"
+  #     state: "present"
+  #     controller_host: "http://{{ genie_ip }}:80"
+  #     controller_username: admin
+  #     controller_password: "{{ admin_password.stdout }}"
+
+  # - name: Create nextcloud delete playbook
+  #   awx.awx.job_template:
+  #     name: 넥스트클라우드 - 삭제
+  #     description: 넥스트클라우드 삭제
+  #     job_type: "run"
+  #     inventory: genie_inventory
+  #     project: playbook_project
+  #     playbook: nextcloud/nextcloud_destroy.yml
+  #     credentials:
+  #       - "automation_controller_credential"
+  #     state: "present"
+  #     controller_host: "http://{{ genie_ip }}:80"
+  #     controller_username: admin
+  #     controller_password: "{{ admin_password.stdout }}"
 
   # 3Tier
   - name: Create 3tier deploy playbook
