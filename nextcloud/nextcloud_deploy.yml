@@ -14,7 +14,7 @@
       uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
   - name: debug instance_nm stdout
     set_fact:
-      instance_nm: "{{ instance_nm }}-{{uuid}}"
+      instance_nm: "{{ instance_name }}-{{uuid}}"
 
   - name: 가상머신 생성 "{{ instance_nm }}"
     cs_instance:
