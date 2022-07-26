@@ -170,15 +170,10 @@
       name: java-1.8.0-openjdk
       state: present
 
-  # - name: Download Tomcat
-  #   get_url:
-  #     url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
-  #     dest: "/tmp/apache-tomcat-9.0.65.tar.gz"
-
   - name: Download and Unarchive Tomcat
     ansible.builtin.unarchive:
-      src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
-      # src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
+      # src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
+      src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
       dest: /usr/local
       remote_src: yes
       # extra_opts: "--strip-components=1"
