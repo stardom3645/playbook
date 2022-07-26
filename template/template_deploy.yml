@@ -62,7 +62,7 @@
       
   # Nextcloud
   - name: Generate random string with length 5
-    ansible.builtin.debug:
+    debug:
       var: lookup('community.general.random_string', length=5)
       register: uuid
 
