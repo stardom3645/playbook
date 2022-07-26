@@ -4,7 +4,7 @@
   hosts: localhost
   gather_facts: no
   vars:
-    instance_nm: "{{ instance_name }}{{ uuid }}"
+    instance_nm: "{{ instance_name }}-{{ uuid }}"
   tasks:
 
   - name: 가상머신 생성 "{{ instance_nm }}"
@@ -41,10 +41,6 @@
   - name: 배포 가상머신 ip 정보 수집
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
-
-  - name: 배포 가상머신 ip 정보 수집
-    debug:
-      msg: "{{ vm.default_ip }}"
 
   - name: 배포 가상머신 인메모리 inventory에 등록
     add_host:
@@ -274,7 +270,7 @@
   vars:
     base_path: "genie"
     genie_ip: "localhost"
-    instance_nm: "{{ instance_name }}{{ uuid }}"
+    instance_nm: "{{ instance_name }}-{{ uuid }}"
   gather_facts: no
   tasks:
 

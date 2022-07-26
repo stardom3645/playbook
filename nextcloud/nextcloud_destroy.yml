@@ -2,8 +2,8 @@
 - name: Genie를 활용한 Mold VM 삭제
   hosts: localhost
   vars:
-    service_group: "Nextcloud{{ uuid }}"
-    instance_nm: "{{ instance_name }}{{ uuid }}"
+    service_group: "Nextcloud-{{ uuid }}"
+    instance_nm: "{{ instance_name }}-{{ uuid }}"
   gather_facts: no
   ignore_errors: yes
   tasks:
