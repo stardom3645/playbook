@@ -4,8 +4,8 @@
   hosts: localhost
   gather_facts: no
   vars:
-    uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
-    instance_nm: "{{ instance_name }}-{{ uuid }}"
+    # uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+    instance_nm: "{{ instance_name }}"
 
     httpd_packages:
       - "httpd"
@@ -41,6 +41,11 @@
     base_path: "genie"
     genie_ip: "localhost"
   tasks:
+
+  - name: debug list_group stdout
+    set_fact:
+      uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+      instance_nm: "{{ instance_nm }}-{{uuid}}"
 
   - name: 가상머신 생성 "{{ instance_nm }}"
     cs_instance:
