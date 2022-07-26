@@ -71,16 +71,32 @@
   ignore_errors: yes
   tasks:
   
-    - name: AWX 초기 관리자 패스워드 추출
-      shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
-      register: admin_password
+  - name: AWX 초기 관리자 패스워드 추출
+    shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+    register: admin_password
 
-    - name: Genie job 스케줄러 삭제 - {{ uuid }}
-      awx.awx.schedule:
-        name: 넥스트클라우드 - 상태체크 - {{ uuid }}
-        state: absent
-        unified_job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
-        # rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
-        controller_host: "http://{{ genie_ip }}:80"
-        controller_username: admin
-        controller_password: "{{ admin_password.stdout }}"
+  - name: Genie job 스케줄러 삭제 - {{ uuid }}
+    awx.awx.schedule:
+      name: 넥스트클라우드 - 상태체크 - {{ uuid }}
+      state: absent
+      unified_job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
+      # rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+  
+  - name: CreatDeletee nextcloud state check playbook
+    awx.awx.job_template:
+      name: 넥스트클라우드 - 상태체크 - {{ uuid }}
+      state: "absent"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+
+  - name: Delete nextcloud delete playbook
+    awx.awx.job_template:
+      name: 넥스트클라우드 - 삭제 - {{ uuid }}
+      state: "absent"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
