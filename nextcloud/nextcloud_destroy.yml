@@ -85,7 +85,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
   
-  - name: CreatDeletee nextcloud state check playbook
+  - name: Deletee nextcloud state check playbook
     awx.awx.job_template:
       name: 넥스트클라우드 - 상태체크 - {{ uuid }}
       state: "absent"
