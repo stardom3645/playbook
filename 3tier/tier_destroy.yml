@@ -28,11 +28,10 @@
       name: "{{ web_instance_nm }}"
     delegate_to: localhost
     register: web_vm
-    # ignore_errors: yes
 
-  # - name: 배포 가상머신 ip 정보 수집
-  #   debug:
-  #     msg: "{{ web_vm }}"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ web_vm }}"
 
   - name: Remove a static NAT
     cs_staticnat:
@@ -43,7 +42,6 @@
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
     delegate_to: localhost
-    # ignore_errors: yes
 
   - name: Disassociate an IP address
     cs_ip_address:
@@ -54,7 +52,6 @@
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
     delegate_to: localhost
-    # ignore_errors: yes
 
   - name: Destroyed VirtualMachine
     cs_instance:
@@ -69,7 +66,6 @@
       - "{{ was_instance_nm }}"
       - "{{ web_instance_nm }}"
     delegate_to: localhost
-    # ignore_errors: yes
 
 - name: 서비스 상태체크 스케줄러 삭제
   hosts: genie_vm

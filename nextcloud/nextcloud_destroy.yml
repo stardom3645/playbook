@@ -5,6 +5,7 @@
     instance_nm: "nextcloud-deploy-vm"
     service_group: "Nextcloud"
   gather_facts: no
+  ignore_errors: yes
   tasks:
 
   ### Delete resource package  ###
@@ -66,6 +67,7 @@
     base_path: "genie"
     genie_ip: "localhost"
   gather_facts: no
+  ignore_errors: yes
   tasks:
   
     - name: AWX 초기 관리자 패스워드 추출
