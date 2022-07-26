@@ -2,7 +2,8 @@
 - name: Genie를 활용한 Mold VM 삭제
   hosts: localhost
   vars:
-    service_group: "Nextcloud"
+    service_group: "Nextcloud{{ uuid }}"
+    instance_nm: "{{ instance_nm }}{{ uuid }}"
   gather_facts: no
   ignore_errors: yes
   tasks:
@@ -75,9 +76,9 @@
 
     - name: Genie job 스케줄러 삭제
       awx.awx.schedule:
-        name: nextcloud_check
+        name: 넥스트클라우드 - 상태체크
         state: absent
-        unified_job_template: "nextcloud_check"
+        unified_job_template: 넥스트클라우드 - 상태체크
         # rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin

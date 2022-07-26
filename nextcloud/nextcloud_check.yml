@@ -2,7 +2,8 @@
 - name: State Check
   hosts: localhost
   vars:
-    service_group: "Nextcloud"
+    service_group: "Nextcloud{{ uuid }}"
+    instance_nm: "{{ instance_nm }}{{ uuid }}"
   gather_facts: no
   tasks:
 
