@@ -117,7 +117,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_name: "{{ instance_nm }}"
+        instance_name: "{{ instance_name }}"
         uuid: "{{ uuid }}"
     delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
 
@@ -136,17 +136,17 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_name: "{{ instance_nm }}"
+        instance_name: "{{ instance_name }}"
         uuid: "{{ uuid }}"
     delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
 
-  - name: 상태체크 job 실행
-    awx.awx.job_launch:
-      job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
-      controller_host: "http://{{ genie_ip }}:80"
-      controller_username: admin
-      controller_password: "{{ admin_password.stdout }}"
-    delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
+  # - name: 상태체크 job 실행
+  #   awx.awx.job_launch:
+  #     job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
+  #     controller_host: "http://{{ genie_ip }}:80"
+  #     controller_username: admin
+  #     controller_password: "{{ admin_password.stdout }}"
+  #   delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
 
   - name: Genie job 스케줄러 생성
     awx.awx.schedule:

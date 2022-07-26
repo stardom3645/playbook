@@ -138,32 +138,32 @@
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 
-  # - name: Create 3tier state check playbook
-  #   awx.awx.job_template:
-  #     name: 전자정부프레임워크 웹 - 상태체크
-  #     description: 전자정부프레임워크 웹 상태체크
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: 3tier/tier_check.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"
+  - name: Create 3tier state check playbook
+    awx.awx.job_template:
+      name: 전자정부프레임워크 웹 - 상태체크
+      description: 전자정부프레임워크 웹 상태체크
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: 3tier/tier_check.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
 
-  # - name: Create 3tier delete playbook
-  #   awx.awx.job_template:
-  #     name: 전자정부프레임워크 웹 - 삭제
-  #     description: 전자정부프레임워크 웹 삭제
-  #     job_type: "run"
-  #     inventory: genie_inventory
-  #     project: playbook_project
-  #     playbook: 3tier/tier_destroy.yml
-  #     credentials:
-  #       - "automation_controller_credential"
-  #     state: "present"
-  #     controller_host: "http://{{ genie_ip }}:80"
-  #     controller_username: admin
-  #     controller_password: "{{ admin_password.stdout }}"    
+  - name: Create 3tier delete playbook
+    awx.awx.job_template:
+      name: 전자정부프레임워크 웹 - 삭제
+      description: 전자정부프레임워크 웹 삭제
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: 3tier/tier_destroy.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"    
