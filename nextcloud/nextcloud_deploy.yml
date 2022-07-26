@@ -280,21 +280,21 @@
     register: admin_password
 
   - name: Create nextcloud state check playbook
-  awx.awx.job_template:
-    name: 넥스트클라우드 - 상태체크
-    description: 넥스트클라우드 상태체크
-    job_type: "run"
-    inventory: genie_inventory
-    project: playbook_project
-    playbook: nextcloud/nextcloud_check.yml
-    credentials:
-      - "automation_controller_credential"
-    state: "present"
-    controller_host: "http://{{ genie_ip }}:80"
-    controller_username: admin
-    controller_password: "{{ admin_password.stdout }}"
-    extra_vars: 
-      instance_nm: "{{ instance_nm }}"
+    awx.awx.job_template:
+      name: 넥스트클라우드 - 상태체크
+      description: 넥스트클라우드 상태체크
+      job_type: "run"
+      inventory: genie_inventory
+      project: playbook_project
+      playbook: nextcloud/nextcloud_check.yml
+      credentials:
+        - "automation_controller_credential"
+      state: "present"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
+      extra_vars: 
+        instance_nm: "{{ instance_nm }}"
 
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
