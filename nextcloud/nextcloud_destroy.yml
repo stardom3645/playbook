@@ -66,6 +66,7 @@
   vars:
     base_path: "genie"
     genie_ip: "localhost"
+    uuid: "{{ uuid }}"
   gather_facts: no
   ignore_errors: yes
   tasks:
@@ -74,11 +75,11 @@
       shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
       register: admin_password
 
-    - name: Genie job 스케줄러 삭제
+    - name: Genie job 스케줄러 삭제 - {{ uuid }}
       awx.awx.schedule:
-        name: 넥스트클라우드 - 상태체크
+        name: 넥스트클라우드 - 상태체크 - {{ uuid }}
         state: absent
-        unified_job_template: 넥스트클라우드 - 상태체크
+        unified_job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
         # rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
         controller_host: "http://{{ genie_ip }}:80"
         controller_username: admin
