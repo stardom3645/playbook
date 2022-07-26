@@ -80,7 +80,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "nextcloud-deploy-vm{{ query('community.general.random_string', upper=false, special=false, length=5) }}"
+        instance_nm: "nextcloud-deploy-vm{{ query('community.general.random_string', upper=false, length=5) }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 
