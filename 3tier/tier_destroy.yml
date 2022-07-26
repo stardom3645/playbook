@@ -25,9 +25,9 @@
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       name: "{{ web_instance_nm }}"
-    ignore_errors: yes
     delegate_to: localhost
     register: web_vm
+    ignore_errors: yes
 
   # - name: 배포 가상머신 ip 정보 수집
   #   debug:
@@ -41,8 +41,8 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
-      ignore_errors: yes
     delegate_to: localhost
+    ignore_errors: yes
 
   - name: Disassociate an IP address
     cs_ip_address:
@@ -52,8 +52,8 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
-      ignore_errors: yes
     delegate_to: localhost
+    ignore_errors: yes
 
   - name: Destroyed VirtualMachine
     cs_instance:
@@ -63,12 +63,12 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       name: "{{ item }}"
       state: destroyed
-      ignore_errors: yes
     with_items:
       - "{{ db_instance_nm }}"
       - "{{ was_instance_nm }}"
       - "{{ web_instance_nm }}"
     delegate_to: localhost
+    ignore_errors: yes
 
 - name: 서비스 상태체크 스케줄러 삭제
   hosts: genie_vm
@@ -76,12 +76,12 @@
     base_path: "genie"
     genie_ip: "localhost"
   gather_facts: no
+  ignore_errors: yes
   tasks:
 
   - name: AWX 초기 관리자 패스워드 추출
     shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
     register: admin_password
-    ignore_errors: yes
 
   - name: Genie job 스케줄러 삭제
     awx.awx.schedule:
@@ -92,4 +92,3 @@
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
-      ignore_errors: yes
