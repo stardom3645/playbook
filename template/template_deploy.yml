@@ -14,7 +14,8 @@
   # Wordpress
   - name: Create wordpress deploy playbook
     awx.awx.job_template:
-      name: wordpress_deploy
+      name: 워드프레스 - 배포
+      description: 워드프레스 배포
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -31,7 +32,8 @@
 
   - name: Create wordpress state check playbook
     awx.awx.job_template:
-      name: wordpress_check
+      name: 워드프레스 - 상태체크
+      description: 워드프레스 상태체크
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -45,7 +47,8 @@
 
   - name: Create wordpress delete playbook
     awx.awx.job_template:
-      name: wordpress_destroy
+      name: 워드프레스 - 삭제
+      description: 워드프레스 삭제
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -60,7 +63,8 @@
   # Nextcloud
   - name: Create nextcloud deploy playbook
     awx.awx.job_template:
-      name: nextcloud_deploy
+      name: 넥스트클라우드 - 배포
+      description: 넥스트클라우드 배포
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -77,7 +81,8 @@
 
   - name: Create nextcloud state check playbook
     awx.awx.job_template:
-      name: nextcloud_check
+      name: 넥스트클라우드 - 상태체크
+      description: 넥스트클라우드 상태체크
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -91,7 +96,8 @@
 
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
-      name: nextcloud_destroy
+      name: 넥스트클라우드 - 삭제
+      description: 넥스트클라우드 삭제
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -106,7 +112,8 @@
   # 3Tier
   - name: Create 3tier deploy playbook
     awx.awx.job_template:
-      name: tier_deploy
+      name: 전자정부프레임워크 웹 - 배포
+      description: 전자정부프레임워크 웹 배포
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -123,7 +130,8 @@
 
   - name: Create 3tier state check playbook
     awx.awx.job_template:
-      name: tier_check
+      name: 전자정부프레임워크 웹 - 상태체크
+      description: 전자정부프레임워크 웹 상태체크
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -137,7 +145,8 @@
 
   - name: Create 3tier delete playbook
     awx.awx.job_template:
-      name: tier_destroy
+      name: 전자정부프레임워크 웹 - 삭제
+      description: 전자정부프레임워크 웹 삭제
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project

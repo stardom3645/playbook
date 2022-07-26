@@ -60,6 +60,7 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       name: "{{ item }}"
       state: destroyed
+      ignore_errors: yes
     with_items:
       - "{{ db_instance_nm }}"
       - "{{ was_instance_nm }}"
@@ -77,6 +78,7 @@
   - name: AWX 초기 관리자 패스워드 추출
     shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
     register: admin_password
+    ignore_errors: yes
 
   - name: Genie job 스케줄러 삭제
     awx.awx.schedule:
@@ -87,3 +89,4 @@
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
+      ignore_errors: yes
