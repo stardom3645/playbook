@@ -280,8 +280,8 @@
 
   - name: Create nextcloud state check playbook
     awx.awx.job_template:
-      name: 넥스트클라우드 - 상태체크
-      description: 넥스트클라우드 상태체크
+      name: 넥스트클라우드 - 상태체크 - {{ uuid }}
+      description: 넥스트클라우드 상태체크 - {{ uuid }}
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -298,8 +298,8 @@
 
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
-      name: 넥스트클라우드 - 삭제
-      description: 넥스트클라우드 삭제
+      name: 넥스트클라우드 - 삭제 - {{ uuid }}
+      description: 넥스트클라우드 삭제 - {{ uuid }}
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -316,16 +316,16 @@
 
   - name: 상태체크 job 실행
     awx.awx.job_launch:
-      job_template: 넥스트클라우드 - 상태체크
+      job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
 
   - name: Genie job 스케줄러 생성
     awx.awx.schedule:
-      name: 넥스트클라우드 - 상태체크
+      name: 넥스트클라우드 - 상태체크 - {{ uuid }}
       state: present
-      unified_job_template: 넥스트클라우드 - 상태체크
+      unified_job_template: 넥스트클라우드 - 상태체크 - {{ uuid }}
       rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin

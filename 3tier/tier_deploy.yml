@@ -3,7 +3,7 @@
 - name: Genie를 활용한 Mold VM 배포(DB Server)
   hosts: localhost
   vars:
-    db_instance_nm: "tier-db-deploy-vm"
+    db_instance_nm: "{{ db_instance_name }}-{{ uuid }}"
   gather_facts: no
   tasks:
 
@@ -116,7 +116,7 @@
 - name: Genie를 활용한 Mold VM 배포(WAS Server)
   hosts: localhost
   vars:
-    was_instance_nm: "tier-was-deploy-vm"
+    was_instance_nm: "{{ was_instance_name }}-{{ uuid }}"
   gather_facts: no
   tasks:
 
@@ -161,7 +161,7 @@
     tomcat_protocol: "tcp"
 
     # Register db server ip in /etc/hosts for context-datasource.xml
-    db_instance_nm: tier-db-deploy-vm
+    db_instance_nm: "{{ db_instance_name }}-{{ uuid }}"
   tasks:
   
   # Install Tomcat
@@ -240,7 +240,7 @@
 - name: Genie를 활용한 Mold VM 배포(WEB Server)
   hosts: localhost
   vars:
-    web_instance_nm: "tier-web-deploy-vm"
+    web_instance_nm: "{{ web_instance_name }}-{{ uuid }}"
   gather_facts: no
   tasks:
 
@@ -322,7 +322,8 @@
     nginx_protocol: "tcp"
 
     # Register was server ip in /etc/hosts for nginx configuration
-    was_instance_nm: "tier-was-deploy-vm"
+    was_instance_nm: "{{ was_instance_name }}-{{ uuid }}"
+    
   gather_facts: no
   tasks:
 
