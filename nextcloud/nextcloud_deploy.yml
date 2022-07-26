@@ -105,7 +105,7 @@
   - name: Create nextcloud state check playbook
     awx.awx.job_template:
       name: 넥스트클라우드 - 상태체크 - {{ uuid }}
-      description: 넥스트클라우드 상태체크
+      description: 넥스트클라우드의 서비스 상태를 체크합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -124,7 +124,7 @@
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
       name: 넥스트클라우드 - 삭제 - {{ uuid }}
-      description: 넥스트클라우드 삭제 - {{ uuid }}
+      description: 넥스트클라우드를 삭제합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project

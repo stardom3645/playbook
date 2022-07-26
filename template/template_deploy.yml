@@ -15,7 +15,7 @@
   - name: Create wordpress deploy playbook
     awx.awx.job_template:
       name: 워드프레스 - 배포
-      description: 워드프레스 배포
+      description: 워드프레스를 배포합니다. 워드프레스는 PHP로 작성된 온라인 오픈 소스 웹 사이트 저작 도구입니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -33,7 +33,7 @@
   - name: Create wordpress state check playbook
     awx.awx.job_template:
       name: 워드프레스 - 상태체크
-      description: 워드프레스 상태체크
+      description: 워드프레스의 서비스 상태를 체크합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -48,7 +48,7 @@
   - name: Create wordpress delete playbook
     awx.awx.job_template:
       name: 워드프레스 - 삭제
-      description: 워드프레스 삭제
+      description: 워드프레스를 삭제합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -68,7 +68,7 @@
   - name: Create nextcloud deploy playbook
     awx.awx.job_template:
       name: 넥스트클라우드 - 배포
-      description: 넥스트클라우드 배포
+      description: 넥스트클라우드를 배포합니다. 넥스트클라우드는 파일 호스팅 서비스를 개발하고 사용하기 위한 클라이언트-서버 소프트웨어입니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -118,8 +118,8 @@
   # 3Tier
   - name: Create 3tier deploy playbook
     awx.awx.job_template:
-      name: 전자정부프레임워크 웹 - 배포
-      description: 전자정부프레임워크 웹 배포
+      name: 전자정부프레임워크 웹서비스 - 배포
+      description: 전자정부프레임워크 웹서비스를 배포합니다. 서버는 물리적으로 3개의 계층으로 구분되며 WEB 서버(클라이언트 계층), WAS 서버(응용 계층), DB 서버(데이터 계층)로 구성됩니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -140,8 +140,8 @@
 
   - name: Create 3tier state check playbook
     awx.awx.job_template:
-      name: 전자정부프레임워크 웹 - 상태체크
-      description: 전자정부프레임워크 웹 상태체크
+      name: 전자정부프레임워크 웹서비스 - 상태체크
+      description: 전자정부프레임워크 웹서비스의 서비스 상태를 체크합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
@@ -155,8 +155,8 @@
 
   - name: Create 3tier delete playbook
     awx.awx.job_template:
-      name: 전자정부프레임워크 웹 - 삭제
-      description: 전자정부프레임워크 웹 삭제
+      name: 전자정부프레임워크 웹서비스 - 삭제
+      description: 전자정부프레임워크 웹서비스를 삭제합니다.
       job_type: "run"
       inventory: genie_inventory
       project: playbook_project
