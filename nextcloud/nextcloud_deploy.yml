@@ -117,7 +117,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "{{ instance_nm }}"
+        instance_name: "{{ instance_nm }}"
         uuid: "{{ uuid }}"
     delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
 
@@ -136,7 +136,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "{{ instance_nm }}"
+        instance_name: "{{ instance_nm }}"
         uuid: "{{ uuid }}"
     delegate_to: "{{ lookup('env', 'AC_NETWORK_ADDRESS') }}"
 
