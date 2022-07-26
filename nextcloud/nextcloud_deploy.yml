@@ -48,7 +48,7 @@
       # instance_nm: "{{ instance_nm }}-{{uuid}}"
   - name: debug instance_nm stdout
     set_fact:
-      instance_nm: "{{ instance_nm }}-{{uuid}}"
+      instance_nm: "{{ instance_nm }}-{{ uuid }}"
 
   - name: 가상머신 생성 "{{ instance_nm }}"
     cs_instance:
@@ -85,11 +85,15 @@
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-  - name: 배포 가상머신 인메모리 inventory에 등록
-    add_host:
-      hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
-      groups:
-        - deployVmIp
+  # - name: 배포 가상머신 인메모리 inventory에 등록
+  #   add_host:
+  #     hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+  #     groups:
+  #       - deployVmIp
+
+  - name: 배포 가상머신 변수 등록
+    set_fact:
+      deployVmIp: "{{ vm.instances[0].nic[0].ipaddress }}"
 
   - name: Create Public IP
     cs_ip_address:
