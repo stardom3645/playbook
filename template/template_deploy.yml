@@ -83,6 +83,7 @@
         instance_nm: "nextcloud-deploy-vm-{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
+        uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
 
   # - name: Create nextcloud state check playbook
   #   awx.awx.job_template:
