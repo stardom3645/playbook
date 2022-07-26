@@ -78,13 +78,9 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "nextcloud-deploy-vm{{ 99999 | random | to_uuid }}"
+        instance_nm: "nextcloud-deploy-vm{{ 9 | random | to_uuid }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
-
-  - name: 배포 가상머신 ip 정보 수집
-    debug:
-      msg: "{{ instance_nm }}"
 
   # - name: Create nextcloud state check playbook
   #   awx.awx.job_template:

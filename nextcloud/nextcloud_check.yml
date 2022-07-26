@@ -2,7 +2,6 @@
 - name: State Check
   hosts: localhost
   vars:
-    instance_nm: "nextcloud-deploy-vm"
     service_group: "Nextcloud"
   gather_facts: no
   tasks:

@@ -2,7 +2,6 @@
 - name: Genie를 활용한 Mold VM 삭제
   hosts: localhost
   vars:
-    instance_nm: "nextcloud-deploy-vm"
     service_group: "Nextcloud"
   gather_facts: no
   ignore_errors: yes
