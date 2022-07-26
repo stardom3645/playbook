@@ -131,7 +131,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+        # uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
         db_instance_name: "db-deploy-vm"
         was_instance_name: "was-deploy-vm"
         web_instance_name: "web-deploy-vm"
