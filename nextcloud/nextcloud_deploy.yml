@@ -310,8 +310,6 @@
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
-      extra_vars: 
-        instance_nm: "{{ instance_nm }}"
 
     - name: 상태체크 job 실행
       awx.awx.job_launch:
