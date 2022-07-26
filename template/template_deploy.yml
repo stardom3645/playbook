@@ -61,10 +61,9 @@
       controller_password: "{{ admin_password.stdout }}"
       
   # Nextcloud
-  - name: Generate random string with length 5
-    debug:
-      var: lookup('community.general.random_string', length=5)
-      register: uuid
+  # - name: Generate random string with length 5
+  #   debug:
+  #     var: lookup('community.general.random_string', length=5)
 
   - name: Create nextcloud deploy playbook
     awx.awx.job_template:
@@ -81,7 +80,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "nextcloud-deploy-vm{{ uuid }}"
+        instance_nm: "nextcloud-deploy-vm{{ lookup('community.general.random_string', length=5) }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 
