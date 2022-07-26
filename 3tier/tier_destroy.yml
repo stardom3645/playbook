@@ -25,12 +25,14 @@
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       name: "{{ web_instance_nm }}"
+      ignore_errors: yes
     delegate_to: localhost
     register: web_vm
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
       msg: "{{ web_vm }}"
+      ignore_errors: yes
 
   - name: Remove a static NAT
     cs_staticnat:
@@ -40,6 +42,7 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
+      ignore_errors: yes
     delegate_to: localhost
 
   - name: Disassociate an IP address
@@ -50,6 +53,7 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_ID') }}"
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
+      ignore_errors: yes
     delegate_to: localhost
 
   - name: Destroyed VirtualMachine
