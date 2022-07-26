@@ -61,7 +61,10 @@
       controller_password: "{{ admin_password.stdout }}"
       
   # Nextcloud
-  # - name: Create instnace name
+  - name: Generate random string with length 5
+    ansible.builtin.debug:
+      var: lookup('community.general.random_string', length=5)
+      register: uuid
 
   - name: Create nextcloud deploy playbook
     awx.awx.job_template:
@@ -78,7 +81,7 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
-        instance_nm: "nextcloud-deploy-vm{{ 9 | random | to_uuid }}"
+        instance_nm: "nextcloud-deploy-vm{{ uuid }}"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 
