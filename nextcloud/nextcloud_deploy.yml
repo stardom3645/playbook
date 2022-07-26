@@ -275,26 +275,26 @@
   gather_facts: no
   tasks:
 
-    - name: AWX 초기 관리자 패스워드 추출
-      shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
-      register: admin_password
+  - name: AWX 초기 관리자 패스워드 추출
+    shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+    register: admin_password
 
-    - name: Create nextcloud state check playbook
-    awx.awx.job_template:
-      name: 넥스트클라우드 - 상태체크
-      description: 넥스트클라우드 상태체크
-      job_type: "run"
-      inventory: genie_inventory
-      project: playbook_project
-      playbook: nextcloud/nextcloud_check.yml
-      credentials:
-        - "automation_controller_credential"
-      state: "present"
-      controller_host: "http://{{ genie_ip }}:80"
-      controller_username: admin
-      controller_password: "{{ admin_password.stdout }}"
-      extra_vars: 
-        instance_nm: "{{ instance_nm }}"
+  - name: Create nextcloud state check playbook
+  awx.awx.job_template:
+    name: 넥스트클라우드 - 상태체크
+    description: 넥스트클라우드 상태체크
+    job_type: "run"
+    inventory: genie_inventory
+    project: playbook_project
+    playbook: nextcloud/nextcloud_check.yml
+    credentials:
+      - "automation_controller_credential"
+    state: "present"
+    controller_host: "http://{{ genie_ip }}:80"
+    controller_username: admin
+    controller_password: "{{ admin_password.stdout }}"
+    extra_vars: 
+      instance_nm: "{{ instance_nm }}"
 
   - name: Create nextcloud delete playbook
     awx.awx.job_template:
@@ -311,19 +311,19 @@
       controller_username: admin
       controller_password: "{{ admin_password.stdout }}"
 
-    - name: 상태체크 job 실행
-      awx.awx.job_launch:
-        job_template: "nextcloud_check"
-        controller_host: "http://{{ genie_ip }}:80"
-        controller_username: admin
-        controller_password: "{{ admin_password.stdout }}"
+  - name: 상태체크 job 실행
+    awx.awx.job_launch:
+      job_template: "nextcloud_check"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
 
-    - name: Genie job 스케줄러 생성
-      awx.awx.schedule:
-        name: nextcloud_check
-        state: present
-        unified_job_template: nextcloud_check
-        rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
-        controller_host: "http://{{ genie_ip }}:80"
-        controller_username: admin
-        controller_password: "{{ admin_password.stdout }}"
+  - name: Genie job 스케줄러 생성
+    awx.awx.schedule:
+      name: nextcloud_check
+      state: present
+      unified_job_template: nextcloud_check
+      rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
+      controller_host: "http://{{ genie_ip }}:80"
+      controller_username: admin
+      controller_password: "{{ admin_password.stdout }}"
