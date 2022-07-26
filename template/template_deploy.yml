@@ -81,7 +81,7 @@
       controller_password: "{{ admin_password.stdout }}"
       extra_vars: 
         uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
-        instance_nm: "nextcloud-deploy-vm"
+        instance_name: "nextcloud-deploy-vm"
         instance_temp: "CentOS-8-cloudinit"
         instance_computeoffer: "2C-4GB-RBD"
 

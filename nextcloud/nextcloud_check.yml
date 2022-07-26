@@ -3,7 +3,7 @@
   hosts: localhost
   vars:
     service_group: "Nextcloud{{ uuid }}"
-    instance_nm: "{{ instance_nm }}{{ uuid }}"
+    instance_nm: "{{ instance_name }}{{ uuid }}"
   gather_facts: no
   tasks:
 

@@ -4,7 +4,7 @@
   hosts: localhost
   gather_facts: no
   vars:
-    instance_nm: "{{ instance_nm }}{{ uuid }}"
+    instance_nm: "{{ instance_name }}{{ uuid }}"
   tasks:
 
   - name: 가상머신 생성 "{{ instance_nm }}"
@@ -274,7 +274,7 @@
   vars:
     base_path: "genie"
     genie_ip: "localhost"
-    instance_nm: "{{ instance_nm }}{{ uuid }}"
+    instance_nm: "{{ instance_name }}{{ uuid }}"
   gather_facts: no
   tasks:
 
