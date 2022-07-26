@@ -7,6 +7,7 @@
     web_instance_nm: "tier-web-deploy-vm"
     service_group: "3Tier"
   gather_facts: no
+  ignore_errors: yes
   tasks:
 
   ### Delete resource package  ###
@@ -27,7 +28,7 @@
       name: "{{ web_instance_nm }}"
     delegate_to: localhost
     register: web_vm
-    ignore_errors: yes
+    # ignore_errors: yes
 
   # - name: 배포 가상머신 ip 정보 수집
   #   debug:
@@ -42,7 +43,7 @@
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
     delegate_to: localhost
-    ignore_errors: yes
+    # ignore_errors: yes
 
   - name: Disassociate an IP address
     cs_ip_address:
@@ -53,7 +54,7 @@
       ip_address: "{{ web_vm.instances[0].public_ip }}"
       state: absent
     delegate_to: localhost
-    ignore_errors: yes
+    # ignore_errors: yes
 
   - name: Destroyed VirtualMachine
     cs_instance:
@@ -68,7 +69,7 @@
       - "{{ was_instance_nm }}"
       - "{{ web_instance_nm }}"
     delegate_to: localhost
-    ignore_errors: yes
+    # ignore_errors: yes
 
 - name: 서비스 상태체크 스케줄러 삭제
   hosts: genie_vm
