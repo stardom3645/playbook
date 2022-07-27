@@ -285,11 +285,11 @@
       name: 넥스트클라우드 - 상태체크 - {{ uuid }}
       description: 넥스트클라우드 상태체크 - {{ uuid }}
       job_type: "run"
-      inventory: genie_inventory
-      project: playbook_project
+      inventory: Genie Inventory
+      project: Genie Git Project
       playbook: nextcloud/nextcloud_check.yml
       credentials:
-        - "automation_controller_credential"
+        - "Automation Controller Credential"
       state: "present"
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
@@ -303,11 +303,11 @@
       name: 넥스트클라우드 - 삭제 - {{ uuid }}
       description: 넥스트클라우드 삭제 - {{ uuid }}
       job_type: "run"
-      inventory: genie_inventory
-      project: playbook_project
+      inventory: Genie Inventory
+      project: Genie Git Project
       playbook: nextcloud/nextcloud_destroy.yml
       credentials:
-        - "automation_controller_credential"
+        - "Automation Controller Credential"
       state: "present"
       controller_host: "http://{{ genie_ip }}:80"
       controller_username: admin
