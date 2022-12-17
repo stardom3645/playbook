@@ -75,21 +75,25 @@
       groups:
         - db_deployVmIp
 
-  # - name: 배포 가상머신 인메모리 inventory에 등록
-  #   add_host:
-  #     hostname: "{{ ac_public_ip.ip_address }}"
-  #     groups:
-  #       - db_deployVmPublicIp
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ ac_public_ip.ip_address }}"
+      groups:
+        - db_deployVmPublicIp
+
 ### Deploy DB Server ###
 - name: Deploy DB Server
-  hosts: db_deployVmIp
+  hosts: db_deployVmPublicIp
   gather_facts: no
   vars:
-    db_deployVmIp: "{{ db_deployVmIp }}"
+    db_deployVmIp: "{{ db_deployVmPublicIp }}"
     # MySQL Settings
     mysql_root_password: Ablecloud1!
     mysql_db: cloud
   tasks:
+
+  - name: What is my inventory_hostname
+    debug: var={{inventory_hostname}}
 
   - name: Update Gitea config file
     lineinfile:
@@ -97,7 +101,7 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ db_deployVmIp }}":3000'}
+      - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ db_deployVmPublicIp }}":3000'}
 
 #=============================================================
 
