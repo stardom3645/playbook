@@ -80,7 +80,7 @@
   hosts: db_deployVmIp
   gather_facts: no
   vars:
-
+    db_deployVmIp: "{{ db_deployVmIp }}"
     # MySQL Settings
     mysql_root_password: Ablecloud1!
     mysql_db: cloud
