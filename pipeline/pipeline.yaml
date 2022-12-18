@@ -271,4 +271,4 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^        <url>', line: '        <url>http://10.10.10.99:3000/ablecloud/ablecloud.git</url>'}
+      - {'regexp': '^        <url>', line: '        <url>http://{{ gitea_vm.instances[0].public_ip }}:3000/ablecloud/ablecloud.git</url>'}
