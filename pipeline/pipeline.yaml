@@ -274,5 +274,4 @@
       - {'regexp': '^        <url>', line: '        <url>http://{{ gitea_vm.instances[0].public_ip }}:3000/ablecloud/ablecloud.git</url>'}
 
   - name: Restart jenkins service
-    systemd: name=gitea state=restarted
-    
+    systemd: name=jenkins state=restarted
