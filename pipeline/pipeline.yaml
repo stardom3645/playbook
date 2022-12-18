@@ -29,9 +29,24 @@
       delay: 20
       timeout: 300
 
+  - name: 배포한 가상머신 정보 수집
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ db_instance_name }}"
+    delegate_to: localhost
+    register: db_vm
+
   - name: 배포 가상머신 ip 정보 수집
     debug:
-      msg: "{{ db_vm.default_ip }}"
+      msg: "{{ db_vm.instances[0].nic[0].ipaddress }}"
+
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ db_vm.instances[0].nic[0].ipaddress }}"
+      groups:
+        - db_deployVmIp
 
   - name: Create Public IP
     cs_ip_address:
@@ -54,7 +69,8 @@
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       vm: "{{ db_instance_name }}"
-
+    delegate_to: localhost
+    
   - name: Allow port for public ip
     cs_firewall:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
@@ -68,22 +84,13 @@
     with_items:
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
+    delegate_to: localhost
 
   # - name: 배포 가상머신 인메모리 inventory에 등록
   #   add_host:
-  #     hostname: "{{ db_vm.default_ip }}"
+  #     hostname: "{{ ac_public_ip.ip_address }}"
   #     groups:
-  #       - db_deployVmIp
-
-  - name: Write the new ec2 instance host key to known hosts
-    connection: local
-    shell: "ssh-keyscan -H {{ ac_public_ip.ip_address }} >> ~/.ssh/known_hosts"
-
-  - name: 배포 가상머신 인메모리 inventory에 등록
-    add_host:
-      hostname: "{{ ac_public_ip.ip_address }}"
-      groups:
-        - db_deployVmPublicIp
+  #       - db_deployVmPublicIp
 
 ### Deploy DB Server ###
 - name: Deploy DB Server
