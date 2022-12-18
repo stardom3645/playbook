@@ -91,6 +91,11 @@
     mysql_db: cloud
 
   tasks:
+
+  - name: StrictHostKeyChecking
+    set_fact:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
   - name: Start mysqld service
     set_fact:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
