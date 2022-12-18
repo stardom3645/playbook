@@ -51,11 +51,11 @@
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-  - name: 배포 가상머신 인메모리 inventory에 등록
-    add_host:
-      hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
-      groups:
-        - deployVmIp
+  # - name: 배포 가상머신 인메모리 inventory에 등록
+  #   add_host:
+  #     hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+  #     groups:
+  #       - deployVmIp
 
   - name: Create Public IP
     cs_ip_address:
@@ -69,6 +69,12 @@
   - name: Public IP 정보 수집
     debug:
       msg: "{{ ac_public_ip.ip_address }}"
+
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ ac_public_ip.ip_address }}"
+      groups:
+        - deployVmPublicIp
 
   - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
     cs_staticnat:
@@ -97,7 +103,7 @@
 
 ### Deploy DB Server ###
 - name: Deploy DB Server
-  hosts: deployVmIp
+  hosts: deployVmPublicIp
   gather_facts: no
   vars:
     - ansible_user: root
