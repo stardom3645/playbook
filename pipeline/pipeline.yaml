@@ -104,12 +104,6 @@
     - ansible_user: root
     - ansible_ssh_pass: Ablecloud1!
 
-    #MySQL Settings
-    - mysql_root_password: Ablecloud1!
-    - mysql_db: wpdb
-    - mysql_user: wpuser
-    - mysql_password: Ablecloud1!
-
   tasks:
   - name: Update Gitea config file
     lineinfile:
@@ -235,6 +229,10 @@
     - ansible_user: root
     - ansible_ssh_pass: Ablecloud1!
 
+    #MySQL Settings
+    - login_user: root
+    - login_password: Ablecloud1!
+    - login_db: gitea
   tasks:
   # gitea 변경
   - name: 배포한 DB 가상머신 정보 수집("{{ gitea_instance_nm }}")
@@ -248,13 +246,15 @@
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
-      msg: "{{ gitea_vm.instances[0].nic[0].ipaddress }}"
+      msg: "{{ gitea_vm.instances[0].public_ip }}"
 
-  - name: Creates database for WordPress
+  - name: Update
     community.mysql.mysql_query:
-      login_db: gitea
       query:
-      - UPDATE webhook SET url = "http://{{ inventory_hostname }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
-      login_user: root
-      login_password: "{{ mysql_root_password }}"
-    delegate_to: GiteaPublicIp
+      - UPDATE webhook SET url = "http://{{ gitea_vm.instances[0].public_ip }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
+      login_host: "{{ gitea_vm.instances[0].public_ip }}"
+      login_db: "{{ login_db }}"
+      login_user: "{{ login_user }}"
+      login_password: "{{ login_password }}"
+    delegate_to: "{{ gitea_vm.instances[0].public_ip }}"
+    
