@@ -252,17 +252,17 @@
   - name: Set MySQL root Password
     community.mysql.mysql_user:
       name: "{{ login_db }}"
-      password: "{{ mysql_root_password }}"
+      password: "{{ login_password }}"
       login_user: "{{ login_user }}"
-      login_password: "{{ mysql_root_password }}"
+      login_password: "{{ login_password }}"
       state: present
 
   - name: Set MySQL root Grants
     community.mysql.mysql_user:
       name: "{{ login_db }}"
-      password: "{{ mysql_root_password }}"
+      password: "{{ login_password }}"
       login_user: "{{ login_user }}"
-      login_password: "{{ mysql_root_password }}"
+      login_password: "{{ login_password }}"
       host: "{{ item }}"
       priv: "*.*:ALL,GRANT"
       state: present
