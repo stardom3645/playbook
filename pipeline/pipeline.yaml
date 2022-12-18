@@ -256,6 +256,7 @@
       login_user: "{{ login_user }}"
       login_password: "{{ login_password }}"
       state: present
+    delegate_to: localhost
 
   - name: Set MySQL root Grants
     community.mysql.mysql_user:
@@ -269,6 +270,7 @@
     with_items:
       - localhost
       - "%"
+    delegate_to: localhost
 
   - name: Update
     community.mysql.mysql_query:
