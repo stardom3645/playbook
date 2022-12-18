@@ -145,15 +145,15 @@
       uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
   - name: debug instance_nm stdout
     set_fact:
-      jenkin_instance_nm: "{{ jenkin_instance_nm }}-{{uuid}}"
+      jenkins_instance_nm: "{{ jenkins_instance_nm }}-{{uuid}}"
 
-  - name: 가상머신 생성 "{{ jenkin_instance_nm }}"
+  - name: 가상머신 생성 "{{ jenkins_instance_nm }}"
     cs_instance:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      name: "{{ jenkin_instance_nm }}"
+      name: "{{ jenkins_instance_nm }}"
       template: "{{ jenkins_instance_temp }}"
       service_offering: "{{ instance_computeoffer }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -174,7 +174,7 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      name: "{{ jenkin_instance_nm }}"
+      name: "{{ jenkins_instance_nm }}"
     delegate_to: localhost
     register: vm
 
@@ -201,14 +201,14 @@
       groups:
         - JenkinsPublicIp
 
-  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ jenkin_instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ jenkins_instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      vm: "{{ jenkin_instance_nm }}"
+      vm: "{{ jenkins_instance_nm }}"
     delegate_to: localhost
 
   - name: Allow port for public ip
