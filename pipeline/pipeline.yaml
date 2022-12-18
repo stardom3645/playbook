@@ -295,7 +295,7 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^      <serverUrl>', line: '      <serverUrl>https://{{ k8s_addr }}:6443</serverUrl>/</jenkinsUrl>'}
+      - {'regexp': '^      <serverUrl>', line: '      <serverUrl>https://{{ k8s_addr }}:6443</serverUrl>'}
 
   - name: Restart jenkins service
     systemd: name=jenkins state=restarted
