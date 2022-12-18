@@ -75,15 +75,15 @@
       groups:
         - db_deployVmIp
 
-  - name: 배포 가상머신 인메모리 inventory에 등록
-    add_host:
-      hostname: "{{ ac_public_ip.ip_address }}"
-      groups:
-        - db_deployVmPublicIp
+  # - name: 배포 가상머신 인메모리 inventory에 등록
+  #   add_host:
+  #     hostname: "{{ ac_public_ip.ip_address }}"
+  #     groups:
+  #       - db_deployVmPublicIp
 
 ### Deploy DB Server ###
 - name: Deploy DB Server
-  hosts: db_deployVmPublicIp
+  hosts: db_deployVmIp
   gather_facts: no
   vars:
     # MySQL Settings
@@ -103,7 +103,6 @@
       line: "{{item.line}}"
     with_items:
       - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ inventory_hostname }}":3000'}
-    delegate_to: "{{ inventory_hostname }}"
 
 #=============================================================
 
