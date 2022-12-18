@@ -279,7 +279,7 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^      <jenkinsUrl>', line: '      <jenkinsUrl>http://{{ gitea_vm.instances[0].public_ip }}:8080/</jenkinsUrl>'}
+      - {'regexp': '^      <jenkinsUrl>', line: '      <jenkinsUrl>http://{{ inventory_hostname }}:8080/</jenkinsUrl>'}
 
   - name: Update jenkins file (jenkins addr-2)
     lineinfile:
@@ -287,7 +287,7 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^  <jenkinsUrl>', line: '  <jenkinsUrl>http://{{ gitea_vm.instances[0].public_ip }}:8080/</jenkinsUrl>'}
+      - {'regexp': '^  <jenkinsUrl>', line: '  <jenkinsUrl>http://{{ inventory_hostname }}:8080/</jenkinsUrl>'}
 
   - name: Update jenkins file (k8s addr)
     lineinfile:
