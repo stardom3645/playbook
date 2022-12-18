@@ -1,20 +1,29 @@
 ---
-### Deploy pipeline ###
-- name: Genie를 활용한 Pipeline (CI/CD) 배포
+### Deploy VirtualMachine ###
+- name: Genie를 활용한 Mold VM 배포
   hosts: localhost
-  vars:
-    db_instance_name: "{{ db_instance_name }}-{{ uuid }}"
   gather_facts: no
+  vars:
+    # instance_nm: "{{ instance_name }}-{{ uuid }}"
+    base_path: "genie"
+    genie_ip: "localhost"
   tasks:
 
-  - name: 가상머신 생성 "{{ db_instance_name }}"
+  - name: debug uuid stdout
+    set_fact:
+      uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+  - name: debug instance_nm stdout
+    set_fact:
+      instance_nm: "{{ instance_name }}-{{uuid}}"
+
+  - name: 가상머신 생성 "{{ instance_nm }}"
     cs_instance:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      name: "{{ db_instance_name }}"
-      template: "{{ db_instance_temp }}"
+      name: "{{ instance_nm }}"
+      template: "{{ instance_temp }}"
       service_offering: "{{ instance_computeoffer }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
       user_data: |
@@ -22,16 +31,31 @@
           disable_root: false
           ssh_pwauth: true
       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-    register: db_vm
+    register: vm
 
   - name: 생성한 가상머신이 부팅이 완료될 때까지 대기
     wait_for_connection:
       delay: 20
       timeout: 300
 
+  - name: 배포한 가상머신 정보 수집
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ instance_nm }}"
+    delegate_to: localhost
+    register: vm
+
   - name: 배포 가상머신 ip 정보 수집
     debug:
-      msg: "{{ db_vm.default_ip }}"
+      msg: "{{ vm.instances[0].nic[0].ipaddress }}"
+
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
+      groups:
+        - deployVmIp
 
   - name: Create Public IP
     cs_ip_address:
@@ -45,45 +69,35 @@
   - name: Public IP 정보 수집
     debug:
       msg: "{{ ac_public_ip.ip_address }}"
-      
-  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ db_instance_name }}"
+
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
-      vm: "{{ db_instance_name }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      vm: "{{ instance_nm }}"
+    delegate_to: localhost
 
   - name: Allow port for public ip
     cs_firewall:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       start_port: "{{ item.port }}"
       end_port: "{{ item.port }}"
       protocol: "{{ item.protocol }}"
     with_items:
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
-
-  # - name: 배포 가상머신 인메모리 inventory에 등록
-  #   add_host:
-  #     hostname: "{{ db_vm.default_ip }}"
-  #     groups:
-  #       - db_deployVmIp
-
-  - name: 배포 가상머신 인메모리 inventory에 등록
-    add_host:
-      hostname: "{{ ac_public_ip.ip_address }}"
-      groups:
-        - db_deployVmPublicIp
+    delegate_to: localhost
 
 ### Deploy DB Server ###
 - name: Deploy DB Server
-  hosts: db_deployVmPublicIp
+  hosts: deployVmIp
   gather_facts: no
   vars:
     # MySQL Settings
@@ -91,10 +105,6 @@
     mysql_db: cloud
 
   tasks:
-
-  # - name: StrictHostKeyChecking
-  #   set_fact:
-  #   ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   - name: Start firewalld service
     systemd: name=firewalld state=restarted
