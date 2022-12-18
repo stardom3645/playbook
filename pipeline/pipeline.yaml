@@ -120,9 +120,6 @@
 
 
 
-
-
-
 #=============================================================
 
 ### Deploy VirtualMachine ###
@@ -259,4 +256,19 @@
       login_user: "{{ login_user }}"
       login_password: "{{ login_password }}"
     delegate_to: localhost
-    
+
+  - name: Update jenkins file (gitea server)
+    lineinfile:
+      path: "/var/lib/jenkins/org.jenkinsci.plugin.gitea.servers.GiteaServers.xml"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+    with_items:
+      - {'regexp': '^<serverUrl>', line: '<serverUrl>http://{{ gitea_vm.instances[0].public_ip }}:3000</serverUrl>'}
+
+  - name: Update jenkins file (gitea repo item)
+    lineinfile:
+      path: "/var/lib/jenkins/jobs/ablecloud-k8s/config.xml"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+    with_items:
+      - {'regexp': '^<url>', line: '<url>http://{{ gitea_vm.instances[0].public_ip }}:3000/ablecloud/ablecloud.git</url>'}
