@@ -253,7 +253,7 @@
   - name: Update MySQL Data (Webhook ip)
     community.mysql.mysql_query:
       query:
-      - UPDATE webhook SET url = "http://{{ gitea_vm.instances[0].public_ip }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
+      - UPDATE webhook SET url = "http://{{ inventory_hostname }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
       login_host: "{{ gitea_vm.instances[0].public_ip }}"
       login_db: "{{ login_db }}"
       login_user: "{{ login_user }}"
