@@ -86,14 +86,14 @@
   hosts: db_deployVmPublicIp
   gather_facts: no
   vars:
-    db_deployVmPublicIp: "{{ db_deployVmPublicIp }}"
+    db_deployVmPublicIp: "{{inventory_hostname}}"
     # MySQL Settings
     mysql_root_password: Ablecloud1!
     mysql_db: cloud
   tasks:
 
-  - name: What is my inventory_hostname
-    debug: var={{inventory_hostname}}
+  # - name: What is my inventory_hostname
+  #   debug: var={{inventory_hostname}}
 
   - name: Update Gitea config file
     lineinfile:
