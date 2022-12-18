@@ -49,7 +49,7 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      name: "{{ nfs_storage_vm }}"
+      name: "{{ nfs_storage_vm_nm }}"
     delegate_to: localhost
     register: vm
 
