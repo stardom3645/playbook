@@ -75,9 +75,9 @@
   #     groups:
   #       - db_deployVmIp
 
-- name: Write the new ec2 instance host key to known hosts
-  connection: local
-  shell: "ssh-keyscan -H {{ ac_public_ip.ip_address }} >> ~/.ssh/known_hosts"
+  - name: Write the new ec2 instance host key to known hosts
+    connection: local
+    shell: "ssh-keyscan -H {{ ac_public_ip.ip_address }} >> ~/.ssh/known_hosts"
 
   - name: 배포 가상머신 인메모리 inventory에 등록
     add_host:
