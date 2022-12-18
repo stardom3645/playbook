@@ -24,6 +24,7 @@
       name: "{{ nfs_storage_vm_nm }}"
       template: "{{ nfs_storage_vm_temp }}"
       service_offering: "{{ instance_computeoffer }}"
+      disk_offering: "{{ disk_offering }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
       user_data: |
           #cloud-config

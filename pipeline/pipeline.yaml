@@ -137,7 +137,7 @@
       uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
   - name: debug instance_nm stdout
     set_fact:
-      jenkins_instance_nm: "{{ jenkins_instance }}-{{uuid}}"
+      jenkins_instance_nm: "{{ jenkins_instance_nm }}-{{uuid}}"
 
   - name: 가상머신 생성 "{{ jenkins_instance_nm }}"
     cs_instance:
