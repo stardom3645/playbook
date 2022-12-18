@@ -273,5 +273,29 @@
     with_items:
       - {'regexp': '^        <url>', line: '        <url>http://{{ gitea_vm.instances[0].public_ip }}:3000/ablecloud/ablecloud.git</url>'}
 
+  - name: Update jenkins file (jenkins addr-1)
+    lineinfile:
+      path: "/var/lib/jenkins/config.xml"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+    with_items:
+      - {'regexp': '^      <jenkinsUrl>', line: '        <url>      <jenkinsUrl>http://{{ gitea_vm.instances[0].public_ip }}:8080/</jenkinsUrl>'}
+
+  - name: Update jenkins file (jenkins addr-2)
+    lineinfile:
+      path: "/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+    with_items:
+      - {'regexp': '^  <jenkinsUrl>', line: '  <jenkinsUrl>http://{{ gitea_vm.instances[0].public_ip }}:8080/</jenkinsUrl>'}
+
+  - name: Update jenkins file (k8s addr)
+    lineinfile:
+      path: "/var/lib/jenkins/config.xml"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+    with_items:
+      - {'regexp': '^      <serverUrl>', line: '      <serverUrl>https://{{ k8s_addr }}:6443</serverUrl>/</jenkinsUrl>'}
+
   - name: Restart jenkins service
     systemd: name=jenkins state=restarted
