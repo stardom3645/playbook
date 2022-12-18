@@ -2,7 +2,7 @@
 ### Deploy VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포 - gitea
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   vars:
     # instance_nm: "{{ gitea_instance_name }}-{{ uuid }}"
     base_path: "genie"
@@ -100,7 +100,7 @@
 ### Deploy DB Server ###
 - name: Deploy Gitea
   hosts: GiteaPublicIp
-  gather_facts: no
+  gather_facts: yes
   vars:
     - ansible_user: root
     - ansible_ssh_pass: Ablecloud1!
@@ -125,7 +125,7 @@
 ### Deploy VirtualMachine ###
 - name: Genie를 활용한 Mold VM 배포 - jenkins
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   vars:
     # instance_nm: "{{ gitea_instance_name }}-{{ uuid }}"
     base_path: "genie"
@@ -225,7 +225,7 @@
 ### jenkins ###
 - name: Deploy jenkins
   hosts: JenkinsPublicIp
-  gather_facts: no
+  gather_facts: yes
   vars:
     - ansible_user: root
     - ansible_ssh_pass: Ablecloud1!
