@@ -249,26 +249,26 @@
     debug:
       msg: "{{ gitea_vm.instances[0].public_ip }}"
 
-    - name: Set MySQL root Password
-      community.mysql.mysql_user:
-        name: "{{ login_db }}"
-        password: "{{ mysql_root_password }}"
-        login_user: "{{ login_user }}"
-        login_password: "{{ mysql_root_password }}"
-        state: present
+  - name: Set MySQL root Password
+    community.mysql.mysql_user:
+      name: "{{ login_db }}"
+      password: "{{ mysql_root_password }}"
+      login_user: "{{ login_user }}"
+      login_password: "{{ mysql_root_password }}"
+      state: present
 
-    - name: Set MySQL root Grants
-      community.mysql.mysql_user:
-        name: "{{ login_db }}"
-        password: "{{ mysql_root_password }}"
-        login_user: "{{ login_user }}"
-        login_password: "{{ mysql_root_password }}"
-        host: "{{ item }}"
-        priv: "*.*:ALL,GRANT"
-        state: present
-      with_items:
-        - localhost
-        - "%"
+  - name: Set MySQL root Grants
+    community.mysql.mysql_user:
+      name: "{{ login_db }}"
+      password: "{{ mysql_root_password }}"
+      login_user: "{{ login_user }}"
+      login_password: "{{ mysql_root_password }}"
+      host: "{{ item }}"
+      priv: "*.*:ALL,GRANT"
+      state: present
+    with_items:
+      - localhost
+      - "%"
 
   - name: Update
     community.mysql.mysql_query:
