@@ -92,9 +92,9 @@
 
   tasks:
 
-  - name: Write the new ec2 instance host key to known hosts
-    connection: local
-    shell: "ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts"
+  # - name: Write the new ec2 instance host key to known hosts
+  #   connection: {{ inventory_hostname }}
+  #   shell: "ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts"
 
   - name: Update Gitea config file
     lineinfile:
@@ -103,6 +103,7 @@
       line: "{{item.line}}"
     with_items:
       - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ inventory_hostname }}":3000'}
+    delegate_to: localhost
 
 #=============================================================
 
