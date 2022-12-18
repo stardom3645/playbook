@@ -86,14 +86,21 @@
   hosts: db_deployVmPublicIp
   gather_facts: no
   vars:
-    db_deployVmPublicIp: "{{inventory_hostname}}"
     # MySQL Settings
     mysql_root_password: Ablecloud1!
     mysql_db: cloud
-  tasks:
 
-  # - name: What is my inventory_hostname
-  #   debug: var={{inventory_hostname}}
+  tasks:
+  - name: What is my ansible_hostname
+    debug: {{ansible_hostname}}
+
+  tasks:
+  - name: What is my inventory_hostname
+    debug: {{inventory_hostname}}
+
+  - name: Write the new ec2 instance host key to known hosts
+    connection: local
+    shell: "ssh-keyscan -H {{ ansible_hostname }} >> ~/.ssh/known_hosts"
 
   - name: Update Gitea config file
     lineinfile:
@@ -101,7 +108,7 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ db_deployVmPublicIp }}":3000'}
+      - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ ansible_hostname }}":3000'}
 
 #=============================================================
 
