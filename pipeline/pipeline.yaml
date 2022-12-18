@@ -249,30 +249,7 @@
     debug:
       msg: "{{ gitea_vm.instances[0].public_ip }}"
 
-  - name: Set MySQL root Password
-    community.mysql.mysql_user:
-      name: "{{ login_db }}"
-      password: "{{ login_password }}"
-      login_user: "{{ login_user }}"
-      login_password: "{{ login_password }}"
-      state: present
-    delegate_to: localhost
-
-  - name: Set MySQL root Grants
-    community.mysql.mysql_user:
-      name: "{{ login_db }}"
-      password: "{{ login_password }}"
-      login_user: "{{ login_user }}"
-      login_password: "{{ login_password }}"
-      host: "{{ item }}"
-      priv: "*.*:ALL,GRANT"
-      state: present
-    with_items:
-      - localhost
-      - "%"
-    delegate_to: localhost
-
-  - name: Update
+  - name: Update MySQL Data (Webhook ip)
     community.mysql.mysql_query:
       query:
       - UPDATE webhook SET url = "http://{{ gitea_vm.instances[0].public_ip }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
