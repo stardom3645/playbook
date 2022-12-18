@@ -100,14 +100,10 @@
   hosts: deployVmIp
   gather_facts: no
   vars:
-    # MySQL Settings
-    mysql_root_password: Ablecloud1!
-    mysql_db: cloud
+    - ansible_user: root
+    - ansible_ssh_pass: Ablecloud1!
 
   tasks:
-
-  - name: Start firewalld service
-    systemd: name=firewalld state=restarted
 
   - name: Update Gitea config file
     lineinfile:
