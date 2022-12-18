@@ -218,6 +218,8 @@
         - {port: 22, protocol: tcp}
         - {port: 3000, protocol: tcp}
         - {port: 8080, protocol: tcp}
+        - {port: 6443, protocol: tcp}
+        - {port: 8443, protocol: tcp}
     delegate_to: localhost
 
 ### jenkins ###
@@ -233,6 +235,7 @@
     - login_password: Ablecloud1!
     - login_db: gitea
   tasks:
+
   # gitea 변경
   - name: 배포한 gitea 가상머신 정보 수집("{{ gitea_instance_nm }}")
     cs_instance_info:
