@@ -92,14 +92,6 @@
 
   tasks:
 
-  # - name: Write the new ec2 instance host key to known hosts
-  #   connection: {{ inventory_hostname }}
-  #   shell: "ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts"
-  - name: Download sql file
-    get_url:
-      url: "https://images.ablecloud.io/genie/3tier/db.sql"
-      dest: /tmp/
-      
   - name: Update Gitea config file
     lineinfile:
       path: "/etc/gitea/gitea.ini"
