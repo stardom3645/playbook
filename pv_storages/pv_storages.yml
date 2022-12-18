@@ -15,13 +15,13 @@
     set_fact:
       nfs_storage_vm_nm: "{{ nfs_storage_vm }}-{{uuid}}"
 
-  - name: 가상머신 생성 "{{ nfs_storage_vm }}"
+  - name: 가상머신 생성 "{{ nfs_storage_vm_nm }}"
     cs_instance:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      name: "{{ nfs_storage_vm }}"
+      name: "{{ nfs_storage_vm_nm }}"
       template: "{{ nfs_storage_vm_temp }}"
       service_offering: "{{ instance_computeoffer }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
@@ -76,14 +76,14 @@
       groups:
         - NFSPublicIp
 
-  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ nfs_storage_vm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ nfs_storage_vm_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      vm: "{{ nfs_storage_vm }}"
+      vm: "{{ nfs_storage_vm_nm }}"
     delegate_to: localhost
 
   - name: Allow port for public ip
