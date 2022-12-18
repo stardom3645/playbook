@@ -91,7 +91,12 @@
     mysql_db: cloud
 
   tasks:
+  - name: Start mysqld service
+    systemd: name=mysqld state=started enabled=yes
 
+  - name: Start firewalld service
+    systemd: name=firewalld state=restarted
+    
   - name: Update Gitea config file
     lineinfile:
       path: "/etc/gitea/gitea.ini"
