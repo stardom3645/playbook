@@ -92,14 +92,9 @@
 
   tasks:
 
-  - name: StrictHostKeyChecking
-    set_fact:
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-
-  - name: Start mysqld service
-    set_fact:
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-    systemd: name=mysqld state=started enabled=yes
+  # - name: StrictHostKeyChecking
+  #   set_fact:
+  #   ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   - name: Start firewalld service
     systemd: name=firewalld state=restarted
