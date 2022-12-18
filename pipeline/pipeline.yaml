@@ -117,7 +117,10 @@
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ inventory_hostname }}":3000'}
+      - {'regexp': '^ROOT_URL', line: 'ROOT_URL              = http://"{{ inventory_hostname }}":3000'}
+
+    - name: Start gitea service
+      systemd: name=gitea state=restarted
 
 #=============================================================
 
