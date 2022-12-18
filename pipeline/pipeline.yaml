@@ -1,10 +1,10 @@
 ---
 ### Deploy VirtualMachine ###
-- name: Genie를 활용한 Mold VM 배포
+- name: Genie를 활용한 Mold VM 배포 - gitea
   hosts: localhost
   gather_facts: no
   vars:
-    # instance_nm: "{{ instance_name }}-{{ uuid }}"
+    # instance_nm: "{{ gitea_instance_name }}-{{ uuid }}"
     base_path: "genie"
     genie_ip: "localhost"
   tasks:
@@ -14,16 +14,16 @@
       uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
   - name: debug instance_nm stdout
     set_fact:
-      instance_nm: "{{ instance_name }}-{{uuid}}"
+      gitea_instance_nm: "{{ gitea_instance_nm }}-{{uuid}}"
 
-  - name: 가상머신 생성 "{{ instance_nm }}"
+  - name: 가상머신 생성 "{{ gitea_instance_nm }}"
     cs_instance:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      name: "{{ instance_nm }}"
-      template: "{{ instance_temp }}"
+      name: "{{ gitea_instance_nm }}"
+      template: "{{ gitea_instance_temp }}"
       service_offering: "{{ instance_computeoffer }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
       user_data: |
@@ -43,19 +43,13 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      name: "{{ instance_nm }}"
+      name: "{{ gitea_instance_nm }}"
     delegate_to: localhost
     register: vm
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
-
-  # - name: 배포 가상머신 인메모리 inventory에 등록
-  #   add_host:
-  #     hostname: "{{ vm.instances[0].nic[0].ipaddress }}"
-  #     groups:
-  #       - deployVmIp
 
   - name: Create Public IP
     cs_ip_address:
@@ -74,16 +68,16 @@
     add_host:
       hostname: "{{ ac_public_ip.ip_address }}"
       groups:
-        - deployVmPublicIp
+        - GiteaPublicIp
 
-  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ gitea_instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      vm: "{{ instance_nm }}"
+      vm: "{{ gitea_instance_nm }}"
     delegate_to: localhost
 
   - name: Allow port for public ip
@@ -99,341 +93,168 @@
     with_items:
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
+        - {port: 3000, protocol: tcp}
     delegate_to: localhost
 
 ### Deploy DB Server ###
-- name: Deploy DB Server
-  hosts: deployVmPublicIp
+- name: Deploy Gitea
+  hosts: GiteaPublicIp
   gather_facts: no
   vars:
     - ansible_user: root
     - ansible_ssh_pass: Ablecloud1!
 
-  tasks:
+    #MySQL Settings
+    - mysql_root_password: Ablecloud1!
+    - mysql_db: wpdb
+    - mysql_user: wpuser
+    - mysql_password: Ablecloud1!
 
+  tasks:
   - name: Update Gitea config file
     lineinfile:
       path: "/etc/gitea/gitea.ini"
       regexp: "{{item.regexp}}"
       line: "{{item.line}}"
     with_items:
-      - {'regexp': '^ROOT_URL', line: 'ROOT_URL              = http://"{{ inventory_hostname }}":3000'}
+      - {'regexp': '^ROOT_URL', line: 'ROOT_URL              = http://{{ inventory_hostname }}:3000'}
 
     - name: Start gitea service
       systemd: name=gitea state=restarted
 
+
+
+
+
+
+
 #=============================================================
 
-# ### Deploy WAS VirtualMachine ###
-# - name: Genie를 활용한 Mold VM 배포(WAS Server)
-#   hosts: localhost
-#   vars:
-#     was_instance_nm: "{{ was_instance_name }}-{{ uuid }}"
-#   gather_facts: no
-#   tasks:
+### Deploy VirtualMachine ###
+- name: Genie를 활용한 Mold VM 배포 - jenkins
+  hosts: localhost
+  gather_facts: no
+  vars:
+    # instance_nm: "{{ gitea_instance_name }}-{{ uuid }}"
+    base_path: "genie"
+    genie_ip: "localhost"
+  tasks:
 
-#   - name: 가상머신 생성 "{{ was_instance_nm }}"
-#     cs_instance:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-#       name: "{{ was_instance_nm }}"
-#       template: "{{ instance_temp }}"
-#       service_offering: "{{ instance_computeoffer }}"
-#       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
-#       user_data: |
-#           #cloud-config
-#           disable_root: false
-#           ssh_pwauth: true
-#       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-#     register: was_vm
+  - name: debug uuid stdout
+    set_fact:
+      uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+  - name: debug instance_nm stdout
+    set_fact:
+      jenkin_instance_nm: "{{ jenkin_instance_nm }}-{{uuid}}"
 
-#   - name: 생성한 가상머신이 부팅이 완료될 때까지 대기
-#     wait_for_connection:
-#       delay: 20
-#       timeout: 300
+  - name: 가상머신 생성 "{{ jenkin_instance_nm }}"
+    cs_instance:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      name: "{{ jenkin_instance_nm }}"
+      template: "{{ jenkins_instance_temp }}"
+      service_offering: "{{ instance_computeoffer }}"
+      ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+      user_data: |
+          #cloud-config
+          disable_root: false
+          ssh_pwauth: true
+      networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: vm
 
-#   - name: 배포 가상머신 ip 정보 수집
-#     debug:
-#       msg: "{{ was_vm.default_ip }}"
+  - name: 생성한 가상머신이 부팅이 완료될 때까지 대기
+    wait_for_connection:
+      delay: 20
+      timeout: 300
 
-#   - name: 배포 가상머신 인메모리 inventory에 등록
-#     add_host:
-#       hostname: "{{ was_vm.default_ip }}"
-#       groups:
-#         - was_deployVmIp
+  - name: 배포한 가상머신 정보 수집
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ jenkin_instance_nm }}"
+    delegate_to: localhost
+    register: vm
 
-# ### Deploy WAS Server ##
-# - name: Deploy WAS Server
-#   hosts: was_deployVmIp
-#   gather_facts: no
-#   vars:
-#     tomcat_port: "8080"
-#     tomcat_protocol: "tcp"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ vm.instances[0].nic[0].ipaddress }}"
 
-#     # Register db server ip in /etc/hosts for context-datasource.xml
-#     db_instance_nm: "{{ db_instance_name }}-{{ uuid }}"
-#   tasks:
-  
-#   # Install Tomcat
-#   - name: Install Java 8
-#     yum:
-#       name: java-1.8.0-openjdk
-#       state: present
+  - name: Create Public IP
+    cs_ip_address:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+    register: ac_public_ip
 
-#   - name: Download and Unarchive Tomcat
-#     ansible.builtin.unarchive:
-#       # src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz"
-#       src: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz"
-#       dest: /usr/local
-#       remote_src: yes
-#       # extra_opts: "--strip-components=1"
-#       # creates: /usr/local/bin
+  - name: Public IP 정보 수집
+    debug:
+      msg: "{{ ac_public_ip.ip_address }}"
 
-#   - name: Download Tomcat service file
-#     get_url:
-#       url: "https://images.ablecloud.io/genie/3tier/tomcat.service"
-#       dest: "/etc/systemd/system/"
-    
-#   - name: Start tomcat service
-#     systemd: name=tomcat state=restarted enabled=yes
+  - name: 배포 가상머신 인메모리 inventory에 등록
+    add_host:
+      hostname: "{{ ac_public_ip.ip_address }}"
+      groups:
+        - JenkinsPublicIp
 
-#   - name: Delete ROOT Directory
-#     command: rm -rf /usr/local/apache-tomcat-9.0.65/webapps/ROOT
-#   #     ansible.builtin.file:
-#   #       path: "/usr/local/apache-tomcat-9.0.65/webapps/ROOT"
-#   #       state: absent
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ jenkin_instance_nm }}"
+    cs_staticnat:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      vm: "{{ jenkin_instance_nm }}"
+    delegate_to: localhost
 
-#   - name: Download ROOT.war
-#     get_url:
-#       url: "https://images.ablecloud.io/genie/3tier/ROOT.war"
-#       dest: "/usr/local/apache-tomcat-9.0.65/webapps/"
+  - name: Allow port for public ip
+    cs_firewall:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      start_port: "{{ item.port }}"
+      end_port: "{{ item.port }}"
+      protocol: "{{ item.protocol }}"
+    with_items:
+        - {port: 80, protocol: tcp}
+        - {port: 22, protocol: tcp}
+        - {port: 3000, protocol: tcp}
+    delegate_to: localhost
 
-#   - name: 배포한 DB 가상머신 정보 수집("{{ db_instance_nm }}")
-#     cs_instance_info:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       name: "{{ db_instance_nm }}"
-#     delegate_to: localhost
-#     register: db_vm
+### jenkins ###
+- name: Deploy jenkins
+  hosts: JenkinsPublicIp
+  gather_facts: no
+  vars:
+    - ansible_user: root
+    - ansible_ssh_pass: Ablecloud1!
 
-#   - name: 배포 가상머신 ip 정보 수집
-#     debug:
-#       msg: "{{ db_vm.instances[0].nic[0].ipaddress }}"
+  tasks:
+  # gitea 변경
+  - name: 배포한 DB 가상머신 정보 수집("{{ gitea_instance_nm }}")
+    cs_instance_info:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      name: "{{ gitea_instance_nm }}"
+    delegate_to: localhost
+    register: gitea_vm
 
-#   - name: lineinfile to /etc/hosts
-#     lineinfile:
-#       path: /etc/hosts
-#       line: "{{ db_vm.instances[0].nic[0].ipaddress }} db-server"
+  - name: 배포 가상머신 ip 정보 수집
+    debug:
+      msg: "{{ gitea_vm.instances[0].nic[0].ipaddress }}"
 
-#   # - name: Replace between the expressions
-#   #   ansible.builtin.replace:
-#   #     path: /usr/local/apache-tomcat-9.0.65/webapps/ROOT/src/main/resources/egovframework/spring/context-datasource.xml
-#   #     after: "{{ vm.instances[0].nic[0].ipaddress }}"
-#   #     before: "dbserver"
-
-#   - name: Start tomcat service
-#     systemd: name=tomcat state=restarted
-
-#   - name: Allow port
-#     ansible.posix.firewalld:
-#       port: "{{ tomcat_port }}/{{ tomcat_protocol }}"
-#       permanent: yes
-#       state: enabled
-
-#   - name: Start firewalld service
-#     systemd: name=firewalld state=restarted
-
-# #=============================================================
-
-# ### Deploy WEB VirtualMachine ###
-# - name: Genie를 활용한 Mold VM 배포(WEB Server)
-#   hosts: localhost
-#   vars:
-#     web_instance_nm: "{{ web_instance_name }}-{{ uuid }}"
-#   gather_facts: no
-#   tasks:
-
-#   - name: 가상머신 생성 "{{ web_instance_nm }}"
-#     cs_instance:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-#       name: "{{ web_instance_nm }}"
-#       template: "{{ instance_temp }}"
-#       service_offering: "{{ instance_computeoffer }}"
-#       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
-#       user_data: |
-#           #cloud-config
-#           disable_root: false
-#           ssh_pwauth: true
-#       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-#     register: web_vm
-
-#   - name: 생성한 가상머신이 부팅이 완료될 때까지 대기
-#     wait_for_connection:
-#       delay: 20
-#       timeout: 300
-
-#   - name: 배포 가상머신 ip 정보 수집
-#     debug:
-#       msg: "{{ web_vm.default_ip }}"
-
-#   - name: 배포 가상머신 인메모리 inventory에 등록
-#     add_host:
-#       hostname: "{{ web_vm.default_ip }}"
-#       groups:
-#         - web_deployVmIp
-
-#   - name: Create Public IP
-#     cs_ip_address:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-#       network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-#     register: ac_public_ip
-
-#   - name: Public IP 정보 수집
-#     debug:
-#       msg: "{{ ac_public_ip.ip_address }}"
-
-#   - name: Create a static NAT for "ac_public_ip.ip_address" to "{{ web_instance_nm }}"
-#     cs_staticnat:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-#       ip_address: "{{ ac_public_ip.ip_address }}"
-#       vm: "{{ web_instance_nm }}"
-#     delegate_to: localhost
-
-#   - name: Allow port for public ip
-#     cs_firewall:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-#       ip_address: "{{ ac_public_ip.ip_address }}"
-#       start_port: "{{ item.port }}"
-#       end_port: "{{ item.port }}"
-#       protocol: "{{ item.protocol }}"
-#     with_items:
-#         - {port: 8080, protocol: tcp}
-#         - {port: 22, protocol: tcp}
-#     delegate_to: localhost
-
-# ### Deploy Web Server ###
-# - name: Deploy Web Server
-#   hosts: web_deployVmIp
-#   vars:
-#     nginx_port: "8080"
-#     nginx_protocol: "tcp"
-
-#     # Register was server ip in /etc/hosts for nginx configuration
-#     was_instance_nm: "{{ was_instance_name }}-{{ uuid }}"
-    
-#   gather_facts: no
-#   tasks:
-
-#   # Install nginx
-#   - name: Install nginx
-#     ansible.builtin.package:
-#       name: nginx
-#       state: present
-
-#   - name: Download nginx-was conf file
-#     get_url:
-#       url: "https://images.ablecloud.io/genie/3tier/nginx-was.conf"
-#       dest: "/etc/nginx/conf.d/"
-  
-#   - name: 배포한 가상머신 정보 수집("{{ was_instance_nm }}")
-#     cs_instance_info:
-#       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
-#       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
-#       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-#       name: "{{ was_instance_nm }}"
-#     delegate_to: localhost
-#     register: was_vm
-
-#   - name: 배포 가상머신 ip 정보 수집
-#     debug:
-#       msg: "{{ was_vm.instances[0].nic[0].ipaddress }}"
-
-#   - name: lineinfile to /etc/hosts
-#     lineinfile:
-#       path: /etc/hosts
-#       line: "{{ was_vm.instances[0].nic[0].ipaddress }} was-server"
-
-#   - name: Set httpd_can_network_connect flag on
-#     ansible.posix.seboolean:
-#       name: httpd_can_network_connect
-#       state: yes
-#       persistent: yes
-
-#   - name: Start nginx service
-#     systemd: name=nginx state=restarted
-
-#   # css, images file download
-#   - name: Download css file
-#     get_url:
-#       url: "https://images.ablecloud.io/genie/3tier/css.zip"
-#       dest: "/tmp/css.zip"
-#   - name: Extract css archive
-#     ansible.builtin.unarchive:
-#       src: "/tmp/css.zip"
-#       dest: /usr/share/nginx/html/
-#       remote_src: yes
-
-#   - name: Download images file
-#     get_url:
-#       url: "https://images.ablecloud.io/genie/3tier/images.zip"
-#       dest: "/tmp/images.zip"
-#   - name: Extract images archive
-#     ansible.builtin.unarchive:
-#       src: "/tmp/images.zip"
-#       dest: /usr/share/nginx/html/
-#       remote_src: yes
-
-#   - name: Allow port
-#     ansible.posix.firewalld:
-#       port: "{{ nginx_port }}/{{ nginx_protocol }}"
-#       permanent: yes
-#       state: enabled
-
-#   - name: Start firewalld service
-#     systemd: name=firewalld state=restarted
-
-# #=============================================================
-
-# - name: 서비스 상태체크 스케줄러 생성
-#   hosts: genie_vm
-#   vars:
-#     base_path: "genie"
-#     genie_ip: "localhost"
-#   gather_facts: no
-#   tasks:
-
-#     - name: AWX 초기 관리자 패스워드 추출
-#       shell: kubectl get -n awx secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
-#       register: admin_password
-
-#     - name: 상태체크 job 실행
-#       awx.awx.job_launch:
-#         job_template: tier_check
-#         controller_host: "http://{{ genie_ip }}:80"
-#         controller_username: admin
-#         controller_password: "{{ admin_password.stdout }}"
-
-#     - name: Genie job 스케줄러 생성
-#       awx.awx.schedule:
-#         name: tier_check
-#         state: present
-#         unified_job_template: tier_check
-#         rrule: "DTSTART;TZID=Asia/Seoul:20220101T120000 RRULE:FREQ=MINUTELY;INTERVAL=1"
-#         controller_host: "http://{{ genie_ip }}:80"
-#         controller_username: admin
-#         controller_password: "{{ admin_password.stdout }}"
+  - name: Creates database for WordPress
+    community.mysql.mysql_query:
+      login_db: gitea
+      query:
+      - UPDATE webhook SET url = "http://{{ inventory_hostname }}:8080/gitea-webhook/post?job=gxRest" WHERE id =1
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+    delegate_to: GiteaPublicIp
