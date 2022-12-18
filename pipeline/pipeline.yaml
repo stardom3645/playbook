@@ -256,4 +256,5 @@
       login_db: "{{ login_db }}"
       login_user: "{{ login_user }}"
       login_password: "{{ login_password }}"
+    delegate_to: localhost
     
