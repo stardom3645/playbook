@@ -58,24 +58,24 @@
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-    register: ac_gitea_public_ip
+    register: ac_public_ip
 
   - name: Public IP 정보 수집
     debug:
-      msg: "{{ ac_gitea_public_ip.ip_address }}"
+      msg: "{{ ac_public_ip.ip_address }}"
 
   - name: 배포 가상머신 인메모리 inventory에 등록
     add_host:
-      hostname: "{{ ac_gitea_public_ip.ip_address }}"
+      hostname: "{{ ac_public_ip.ip_address }}"
       groups:
         - GiteaPublicIp
 
-  - name: Create a static NAT for "{{ ac_gitea_public_ip.ip_address }}" to "{{ gitea_instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ gitea_instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_gitea_public_ip.ip_address }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       vm: "{{ gitea_instance_nm }}"
     delegate_to: localhost
@@ -85,7 +85,7 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_gitea_public_ip.ip_address }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       start_port: "{{ item.port }}"
       end_port: "{{ item.port }}"
@@ -189,24 +189,24 @@
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       network: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
-    register: ac_jenkins_public_ip
+    register: ac_public_ip
 
   - name: Public IP 정보 수집
     debug:
-      msg: "{{ ac_jenkins_public_ip.ip_address }}"
+      msg: "{{ ac_public_ip.ip_address }}"
 
   - name: 배포 가상머신 인메모리 inventory에 등록
     add_host:
-      hostname: "{{ ac_jenkins_public_ip.ip_address }}"
+      hostname: "{{ ac_public_ip.ip_address }}"
       groups:
         - JenkinsPublicIp
 
-  - name: Create a static NAT for "{{ ac_jenkins_public_ip.ip_address }}" to "{{ jenkins_instance_nm }}"
+  - name: Create a static NAT for "{{ ac_public_ip.ip_address }}" to "{{ jenkins_instance_nm }}"
     cs_staticnat:
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_jenkins_public_ip.ip_address }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       vm: "{{ jenkins_instance_nm }}"
     delegate_to: localhost
@@ -216,7 +216,7 @@
       api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
-      ip_address: "{{ ac_jenkins_public_ip.ip_address }}"
+      ip_address: "{{ ac_public_ip.ip_address }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
       start_port: "{{ item.port }}"
       end_port: "{{ item.port }}"
