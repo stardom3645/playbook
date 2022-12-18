@@ -103,7 +103,7 @@
       line: "{{item.line}}"
     with_items:
       - {'regexp': '^ROOT_URL', line: 'ROOT_URL                = http://"{{ inventory_hostname }}":3000'}
-    delegate_to: localhost
+    delegate_to: "{{ inventory_hostname }}"
 
 #=============================================================
 
