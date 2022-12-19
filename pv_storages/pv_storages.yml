@@ -48,6 +48,9 @@
 
   - name: create/attach volume to instance
     cs_volume:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       name: nfs-data-disk
       disk_offering: "{{ disk_offering }}"
       vm: "{{ nfs_storage_vm_nm }}"
