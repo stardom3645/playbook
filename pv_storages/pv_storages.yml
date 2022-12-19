@@ -57,15 +57,6 @@
       vm: "{{ nfs_storage_vm_nm }}"
       state: attached
 
-  - name: Deployment pv, pvc
-    shell: | 
-      dnf install -y nfs-utils
-      mkfs.ext4 /dev/sdb
-      mkdir /nfs
-      mount /dev/sdb /nfs
-      echo "/nfs 10.10.0.0/16(rw,no_root_squash)" >> /etc/exports
-      systemctl restart nfs-server
-
   - name: 배포 가상머신 ip 정보 수집
     debug:
       msg: "{{ vm.instances[0].nic[0].ipaddress }}"
@@ -131,6 +122,16 @@
     - kubectl_version: v1.26.0
 
   tasks:
+
+  - name: Deployment pv, pvc
+    shell: | 
+      dnf install -y nfs-utils
+      mkfs.ext4 /dev/sdb
+      mkdir /nfs
+      mount /dev/sdb /nfs
+      echo "/nfs 10.10.0.0/16(rw,no_root_squash)" >> /etc/exports
+      systemctl restart nfs-server
+
   - name: kubectl 설치
     shell: | 
       curl -LO "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
