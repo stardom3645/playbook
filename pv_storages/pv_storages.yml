@@ -24,19 +24,11 @@
       name: "{{ nfs_storage_vm_nm }}"
       template: "{{ nfs_storage_vm_temp }}"
       service_offering: "{{ instance_computeoffer }}"
-      disk_offering: "{{ disk_offering }}"
       ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
       user_data: |
           #cloud-config
           disable_root: false
           ssh_pwauth: true
-          runcmd:
-          - dnf install -y nfs-utils
-          - mkfs.ext4 /dev/sdb
-          - mkdir /nfs
-          - mount /dev/sdb /nfs
-          - echo "/nfs 10.10.0.0/16(rw,no_root_squash)" >> /etc/exports
-          - systemctl restart nfs-server
       networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
     register: vm
 
@@ -53,6 +45,22 @@
       name: "{{ nfs_storage_vm_nm }}"
     delegate_to: localhost
     register: vm
+
+  - name: create/attach volume to instance
+    cs_volume:
+      name: nfs-data-disk
+      disk_offering: "{{ disk_offering }}"
+      vm: "{{ nfs_storage_vm_nm }}"
+      state: attached
+
+  - name: Deployment pv, pvc
+    shell: | 
+      dnf install -y nfs-utils
+      mkfs.ext4 /dev/sdb
+      mkdir /nfs
+      mount /dev/sdb /nfs
+      echo "/nfs 10.10.0.0/16(rw,no_root_squash)" >> /etc/exports
+      systemctl restart nfs-server
 
   - name: 배포 가상머신 ip 정보 수집
     debug:
