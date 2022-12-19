@@ -124,7 +124,22 @@
       curl -LO "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
       install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-  - name: Creating a file with content
+  - name: Creating a file with content kubeconfig
+    copy:
+      dest: "/root/.kube/config"
+      content: |
+        kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: nfs-pvc
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 100Gi
+
+  - name: Creating a file with content persistence volume
     copy:
       dest: "/root/pv-create.yaml"
       content: |
@@ -140,3 +155,19 @@
           nfs:
             server: 10.10.1.98
             path: /nfs
+
+  - name: Creating a file with content persistence volume claim
+    copy:
+      dest: "/root/pvc-create.yaml"
+      content: |
+        kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: nfs-pvc
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 100Gi
+
