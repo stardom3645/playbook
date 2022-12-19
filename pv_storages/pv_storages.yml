@@ -1,6 +1,6 @@
 ---
 ### Deploy VirtualMachine ###
-- name: Genie를 활용한 Mold VM 배포 - NFS Storage
+- name: Genie를 활용한 Mold VM 배포 - NFS_PV Storage
   hosts: localhost
   gather_facts: no
   vars:
@@ -14,6 +14,7 @@
   - name: debug instance_nm stdout
     set_fact:
       nfs_storage_vm_nm: "{{ nfs_storage_vm }}-{{uuid}}"
+      nfs_data_disk_nm: "nfs-data-disk-{{uuid}}"
 
   - name: 가상머신 생성 "{{ nfs_storage_vm_nm }}"
     cs_instance:
@@ -52,7 +53,7 @@
       api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
       api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
       zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
-      name: nfs-data-disk
+      name: "{{ nfs_data_disk_nm }}"
       disk_offering: "{{ disk_offering }}"
       vm: "{{ nfs_storage_vm_nm }}"
       state: attached
@@ -111,7 +112,7 @@
         - {port: 2049, protocol: tcp}
     delegate_to: localhost
 
-### Deploy DB Server ###
+### Deploy NFS Server ###
 - name: Deploy Gitea
   hosts: NFSPublicIp
   gather_facts: no
