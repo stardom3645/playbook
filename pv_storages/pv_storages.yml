@@ -101,16 +101,42 @@
         - {port: 80, protocol: tcp}
         - {port: 22, protocol: tcp}
         - {port: 3000, protocol: tcp}
-        - {port: 3306, protocol: tcp}
+        - {port: 8080, protocol: tcp}
+        - {port: 6443, protocol: tcp}
+        - {port: 8443, protocol: tcp}
+        - {port: 111, protocol: tcp}
+        - {port: 2049, protocol: tcp}
     delegate_to: localhost
 
-# ### Deploy DB Server ###
-# - name: Deploy Gitea
-#   hosts: NFSPublicIp
-#   gather_facts: no
-#   vars:
-#     - ansible_user: root
-#     - ansible_ssh_pass: Ablecloud1!
+### Deploy DB Server ###
+- name: Deploy Gitea
+  hosts: NFSPublicIp
+  gather_facts: no
+  vars:
+    - ansible_user: root
+    - ansible_ssh_pass: Ablecloud1!
 
-#   tasks:
-#   - name:
+    - kubectl_version: v1.26.0
+
+  tasks:
+  - name: kubectl 설치
+    shell: | 
+      curl -LO "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+      install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+  - name: Creating a file with content
+    copy:
+      dest: "/root/pv-create.yaml"
+      content: |
+        apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: nfs-pc
+        spec:
+          capacity:
+            storage: 100Gi
+          accessModes:
+            - ReadWriteMany
+          nfs:
+            server: 10.10.1.98
+            path: /nfs
