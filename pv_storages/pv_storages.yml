@@ -124,6 +124,12 @@
       curl -LO "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
       install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
+  - name: Create a directory if it does not exist
+    file:
+      path: /root/.kube/
+      state: directory
+      mode: '0644'
+
   - name: Creating a file with content kubeconfig
     copy:
       dest: "/root/.kube/config"
