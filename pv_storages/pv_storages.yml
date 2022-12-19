@@ -150,7 +150,7 @@
           accessModes:
             - ReadWriteMany
           nfs:
-            server: 10.10.1.98
+            server: {{ inventory_hostname }}
             path: /nfs
 
   - name: Creating a file with content persistence volume claim
@@ -168,3 +168,7 @@
             requests:
               storage: 100Gi
 
+  - name: Deployment pv, pvc
+    shell: | 
+      kubectl apply -f pv-create.yaml
+      kubectl apply -f pvc-create.yaml
