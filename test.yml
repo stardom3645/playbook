@@ -1,6 +1,6 @@
 ---
 - name: test
-  hosts: 10.10.1.69
+  hosts: localhost
   gather_facts: no
   tasks:
 
