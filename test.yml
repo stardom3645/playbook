@@ -4,7 +4,17 @@
   gather_facts: no
   tasks:
 
-  - name: Add EE to the controller instance
-    awx.awx.execution_environment:
-      name: "AWX EE (genie_latest)"
-      image: ablecloudteam/genie-awx-ee
+  - name: Create a Genie remote repository project
+    uri:
+      url: http://10.10.1.69:80/api/v2/execution_environments/
+      method: POST
+      body_format: json
+      user: admin
+      password: password
+      force_basic_auth: yes
+      body:
+        {
+          "name": AWX EE (genie_latest),
+          "image": ablecloudteam/genie-awx-ee
+        }
+      status_code: 201
