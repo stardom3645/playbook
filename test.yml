@@ -1,0 +1,10 @@
+---
+- name: test
+  hosts: 10.10.1.69
+  gather_facts: no
+  tasks:
+
+  - name: Add EE to the controller instance
+    awx.awx.execution_environment:
+      name: "My EE"
+      image: ablecloudteam/genie-awx-ee
