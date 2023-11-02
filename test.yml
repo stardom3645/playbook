@@ -6,5 +6,5 @@
 
   - name: Add EE to the controller instance
     awx.awx.execution_environment:
-      name: "My EE"
+      name: "AWX EE (genie_latest)"
       image: ablecloudteam/genie-awx-ee
