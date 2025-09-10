@@ -1,0 +1,73 @@
+### Deploy VirtualMachine ###
+- name: VM 생성 후 지정한 부팅 순서대로 기동
+  hosts: localhost
+  gather_facts: no
+  vars:
+    base_path: "genie"
+    genie_ip: "localhost"
+    default_timeout: 180
+
+    # === 추가: 여러 대 생성 및 부팅 순서 제어 ===
+    vm_count: 3                # 생성할 VM 개수 (예: 3)
+    boot_order: [3, 1, 2]      # 부팅할 순서 (예: 3,1,2)
+
+  tasks:
+
+  - name: uuid 생성
+    set_fact:
+      uuid: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=5') }}"
+
+  - name: instance명에 uuid 추가 (베이스명)
+    set_fact:
+      instance_nm: "{{ instance_name }}-{{ uuid }}"
+
+  - name: 생성 대상 시퀀스(1..vm_count) 생성
+    set_fact:
+      vm_seq: "{{ query('sequence', 'start=1 end=' + (vm_count | string)) }}"
+
+  # ------------------------------------------------------------------
+  # 1) 가상머신들 먼저 '중지 상태'로 생성 (예: <base>-1, <base>-2, <base>-3)
+  #    ※ template/service_offering 등 기존 변수/형식 그대로 유지
+  # ------------------------------------------------------------------
+  - name: 가상머신 생성 (stopped) - {{ instance_nm }}-N
+    cs_instance:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      name: "{{ instance_nm }}-{{ item }}"
+      template: "{{ instance_temp }}"
+      service_offering: "{{ instance_computeoffer }}"
+      ssh_key: "{{ lookup('env', 'MOLD_SSH_KEYPAIR') }}"
+      user_data: |
+        #cloud-config
+        disable_root: false
+        ssh_pwauth: true
+      networks: "{{ lookup('env', 'AC_NETWORK_NAME') }}"
+      api_timeout: "{{ default_timeout }}"
+      state: stopped
+    loop: "{{ vm_seq }}"
+    register: vm_created
+
+  - name: 생성 결과 요약
+    debug:
+      msg: "created={{ item.instance.name }} state={{ item.instance.state }}"
+    loop: "{{ vm_created.results | default([]) }}"
+    loop_control:
+      label: "{{ item.instance.name | default('unknown') }}"
+
+  # ------------------------------------------------------------------
+  # 2) 지정한 부팅 순서대로 시작 (예: 3 → 1 → 2)
+  # ------------------------------------------------------------------
+  - name: 부팅 순서대로 가상머신 시작
+    cs_instance:
+      api_url: "{{ lookup('env', 'MOLD_API_URL') }}"
+      api_key: "{{ lookup('env', 'MOLD_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'MOLD_SECRET_KEY') }}"
+      zone: "{{ lookup('env', 'MOLD_ZONE_NAME') }}"
+      name: "{{ instance_nm }}-{{ item }}"
+      api_timeout: "{{ default_timeout }}"
+      state: started
+    loop: "{{ boot_order }}"
+    register: vm_started
+    
