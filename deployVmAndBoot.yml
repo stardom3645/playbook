@@ -49,12 +49,10 @@
     loop: "{{ vm_seq }}"
     register: vm_created
 
-  - name: 생성 결과 요약
+  - name: 생성 결과 요약 (반환 구조와 무관하게 안전하게 표시)
     debug:
-      msg: "created={{ item.instance.name }} state={{ item.instance.state }}"
-    loop: "{{ vm_created.results | default([]) }}"
-    loop_control:
-      label: "{{ item.instance.name | default('unknown') }}"
+      msg: "created={{ instance_nm }}-{{ item }}"
+    loop: "{{ vm_seq }}"
 
   # ------------------------------------------------------------------
   # 2) 지정한 부팅 순서대로 시작 (예: 3 → 1 → 2)
