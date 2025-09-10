@@ -1,3 +1,4 @@
+---
 ### Deploy VirtualMachine ###
 - name: VM 생성 후 지정한 부팅 순서대로 기동
   hosts: localhost
@@ -6,10 +7,7 @@
     base_path: "genie"
     genie_ip: "localhost"
     default_timeout: 180
-
-    # === 추가: 여러 대 생성 및 부팅 순서 제어 ===
-    vm_count: 3                # 생성할 VM 개수 (예: 3)
-    boot_order: [3, 1, 2]      # 부팅할 순서 (예: 3,1,2)
+    # vm_count, boot_order는 여기서 정의하지 않습니다. (AWX가 주입)
 
   tasks:
 
@@ -68,4 +66,3 @@
       state: started
     loop: "{{ boot_order }}"
     register: vm_started
-    
